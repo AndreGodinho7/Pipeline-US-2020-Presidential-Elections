@@ -95,7 +95,7 @@ class BERTSentimentClassifier(SentimentClassifier):
         # reduce memory usage and speed up
         with torch.no_grad():
             for batch in data_loader:
-                text = d["review_text"]
+                text = batch["review_text"]
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
                 labels = batch['sentiments'].to(device)

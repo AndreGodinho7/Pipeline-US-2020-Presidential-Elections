@@ -10,6 +10,14 @@ logging.basicConfig(level=logging.ERROR)
 PRE_TRAINED_MODEL_NAME = 'bert-base-cased' # cased letters are important for Sentiment analysis
 
 class BERTFormatDataset(Dataset):
+    """
+    An abstract class representing a Dataset.
+
+    All datasets that represent a map from keys to data samples should subclass it. 
+    All subclasses should overwrite __getitem__(), supporting fetching a data sample for a given key. 
+    Subclasses could also optionally overwrite __len__(), which is expected to 
+    return the size of the dataset by many Sampler implementations and the default options of DataLoader.
+    """
     def __init__(self, data, max_len):
         self.messages = data.content.to_numpy()
         self.sentiments = data.sentiment.to_numpy()
