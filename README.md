@@ -5,6 +5,6 @@ Perform sentiment analysis classification over realtime tweets of the principal 
 
 ## Log
 
-September 26, 2020: Kafka Producer has been connected to Java HTTP client for Twitter streaming (https://github.com/twitter/hbc). 
+September 26, 2020: Kafka Producer has been connected to Java HTTP client for Twitter tweet streaming (https://github.com/twitter/hbc). 
 
 September 16, 2020: Sentiment analysis classifier has been implemented with a BERT base model. Fine-tune of BERT performed in Google Colab with GPU access.
