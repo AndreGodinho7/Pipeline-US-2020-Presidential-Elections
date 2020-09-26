@@ -60,7 +60,7 @@ public class TwitterProducer {
     public static void main(String[] args) {
         JSONParser parser = new JSONParser();
         try {
-            Object obj = parser.parse(new FileReader("input.json"));
+            Object obj = parser.parse(new FileReader("/home/andregodinho06/Projects/Twitter Project/input.json"));
             new TwitterProducer((JSONObject) obj).run();
 
         } catch (ParseException | IOException e) {
