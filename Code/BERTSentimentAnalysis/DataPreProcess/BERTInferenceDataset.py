@@ -1,5 +1,3 @@
-from DataProcessInterface import DataProcessInterface
-
 import torch
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
@@ -9,7 +7,7 @@ logging.basicConfig(level=logging.ERROR)
 
 PRE_TRAINED_MODEL_NAME = 'bert-base-cased' # cased letters are important for Sentiment analysis
 
-class BERTFormatDataset(Dataset):
+class BERTInferenceDataset(Dataset):
     """
     An abstract class representing a Dataset.
 
@@ -18,12 +16,10 @@ class BERTFormatDataset(Dataset):
     Subclasses could also optionally overwrite __len__(), which is expected to 
     return the size of the dataset by many Sampler implementations and the default options of DataLoader.
     """
-    def __init__(self, data, max_len, device):
-        self.messages = data.content.to_numpy()
-        self.sentiments = data.sentiment.to_numpy()
-        self.tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL_NAME)
+    def __init__(self, messages, max_len, tokenizer):
+        self.messages = messages # list of strings
+        self.tokenizer = tokenizer
         self.max_len = max_len
-        self.device = device
 
     def __len__(self):
         return len(self.messages)
@@ -42,17 +38,16 @@ class BERTFormatDataset(Dataset):
             encoding = self.tokenizer(
                 message,
                 return_tensors='pt',
-                padding='longest',
+                pad_to_max_length=True,
                 truncation=True,
                 max_length=self.max_len,
                 return_attention_mask=True,
                 return_token_type_ids=False,
                 add_special_tokens=True
-            ).to(device=self.model.device)
+            )
             return encoding
 
         message = str(self.messages[index]) 
-        sentiment = self.sentiments[index]
 
         encoding = dataPreprocess(message)
 
@@ -60,5 +55,4 @@ class BERTFormatDataset(Dataset):
         'message': message,
         'input_ids': encoding['input_ids'].flatten(),
         'attention_mask': encoding['attention_mask'].flatten(),
-        'sentiments': torch.tensor(sentiment, dtype=torch.long)
         }

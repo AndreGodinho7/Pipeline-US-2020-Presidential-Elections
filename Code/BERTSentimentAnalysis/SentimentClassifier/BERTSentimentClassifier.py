@@ -76,6 +76,35 @@ class BERTSentimentClassifier(SentimentClassifier):
 
         return correct_predictions.double() / n_examples
 
+    def predict(self, **kwargs):
+        data_loader = kwargs.get('data_loader')
+        device = kwargs.get('device')
+
+        predictions = []
+        messages = []
+
+        # notify all layers we are in eval mode
+        # e.g., dropout layers will work in eval mode instead of training mode
+        self.model.eval()
+
+        # torch.no_grad() impacts the autograd engine and deactivate it 
+        # reduce memory usage and speed up
+
+        with torch.no_grad():
+            for batch in data_loader:
+                message = batch["message"]
+                input_ids = batch['input_ids'].to(device)
+                attention_mask = batch['attention_mask'].to(device)
+
+                outputs = self.model(input_ids, attention_mask)
+
+                _, preds = torch.max(outputs, dim=1)
+                predictions.extend(preds)
+                messages.extend(message)
+
+        return predictions, messages # 0 - negative ; 1 - neutral; 2 - positive
+        
+
     def predict_results(self, **kwargs):
         data_loader = kwargs.get('data_loader')
         device = kwargs.get('device')
@@ -95,7 +124,7 @@ class BERTSentimentClassifier(SentimentClassifier):
         # reduce memory usage and speed up
         with torch.no_grad():
             for batch in data_loader:
-                text = batch["review_text"]
+                text = batch["message"]
                 input_ids = batch['input_ids'].to(device)
                 attention_mask = batch['attention_mask'].to(device)
                 labels = batch['sentiments'].to(device)
