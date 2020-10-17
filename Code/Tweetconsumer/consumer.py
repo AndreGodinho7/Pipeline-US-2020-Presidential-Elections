@@ -17,7 +17,7 @@ from transformers import BertTokenizer
 LOGGING_FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
 
 # kafka configs
-CONSUMER_CONFIG_PATH = '/home/andregodinho06/Projects/Twitter Project/consumer.json'
+#CONSUMER_CONFIG_PATH = '/home/andregodinho06/Projects/Twitter Project/consumer.json'
 AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
@@ -40,9 +40,7 @@ EPOCHS = 10
 CLASSES = 3
 class_names = ['negative', 'neutral', 'positive']
 
-MODEL_NAME = 'reviews_bert_classifier'
-# TODO: insert path
-MODEL_PATH = '/home/andregodinho06/Projects/Twitter Project/'+MODEL_NAME+'.bin'
+#MODEL_NAME = '/home/andregodinho06/Projects/Twitter Project/reviews_bert_classifier.bin'
 USE_GPU = False
 
 np.random.seed(RANDOM_SEED)
@@ -87,8 +85,11 @@ def batch_tweets_dict(records):
 def main():
     logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
     logging.getLogger().setLevel(logging.INFO)
+    
+    consumer_config_path = sys.argv[1]
+    model_path = sys.argv[2]
 
-    with open(CONSUMER_CONFIG_PATH) as f:
+    with open(consumer_config_path) as f:
         configurations = json.load(f)
 
     kafkaConsumer = create_kafka_consumer(configurations)
@@ -106,7 +107,7 @@ def main():
 
     # load BERT sentiment classifier
     logging.info("Loading fine-tuned model...")
-    fine_tuned_weights = torch.load(MODEL_PATH, map_location=torch.device("cpu"))
+    fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
     model = BERT(CLASSES)
     model.load_state_dict(fine_tuned_weights, strict=False)
     bert_sentiment_classifier = BERTSentimentClassifier(model, device)
