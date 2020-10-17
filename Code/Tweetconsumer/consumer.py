@@ -122,7 +122,7 @@ def main():
             records = kafkaConsumer.consume(num_messages=MAX_POLL_RECORDS, 
                                             timeout=MAX_BLOCK_WAIT_TIME)
             
-            logging.info(f'Received {len(records)} records.')
+            logging.info('Received '+str(len(records))+' records.')
             
             # get batch of tweets in a dict {tweet ID: tweet text}
             batch_dict = batch_tweets_dict(records)
@@ -157,7 +157,7 @@ def main():
                     logging.info("Offsets have been committed.")
 
             except Exception as e:
-                logging.critical(f'Thown exception when committing offsets {e}')
+                logging.critical('Thown exception when committing offsets '+str(e))
 
         except KeyboardInterrupt: 
             logging.warning('Python program is closing. Closing Kafka consumer gracefully...')
@@ -166,7 +166,7 @@ def main():
             exit(0)
 
         except KafkaError as e: 
-            logging.critical(f"KAFKA INTERNAL ERROR {e}")
+            logging.critical('KAFKA INTERNAL ERROR '+str(e))
     
 
 if __name__ == "__main__":
