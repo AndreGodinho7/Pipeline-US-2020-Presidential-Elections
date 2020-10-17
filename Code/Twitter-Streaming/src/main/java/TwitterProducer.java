@@ -58,9 +58,10 @@ public class TwitterProducer {
     }
 
     public static void main(String[] args) {
+        String path = args[0];
         JSONParser parser = new JSONParser();
         try {
-            Object obj = parser.parse(new FileReader("/home/andregodinho06/Projects/Twitter Project/input.json"));
+            Object obj = parser.parse(new FileReader(path));
             new TwitterProducer((JSONObject) obj).run();
 
         } catch (ParseException | IOException e) {
