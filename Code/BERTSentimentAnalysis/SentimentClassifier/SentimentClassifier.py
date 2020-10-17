@@ -1,4 +1,4 @@
-from SentimentClassifierInterface import SentimentClassifierInterface
+from .SentimentClassifierInterface import SentimentClassifierInterface
 
 from abc import abstractmethod
 import torch
