@@ -1,5 +1,6 @@
 import sys
 sys.path.append("..")
+import torch
 
 from BERTSentimentAnalysis.DataPreProcess.BERTFormatDataloader import BERTFormatDataloader
 from BERTSentimentAnalysis.DataPreProcess.BERTInferenceDataset import BERTInferenceDataset
