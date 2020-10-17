@@ -1,4 +1,4 @@
-from SentimentClassifier import SentimentClassifier
+from .SentimentClassifier import SentimentClassifier
 
 from abc import abstractmethod
 import numpy as np
