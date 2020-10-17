@@ -76,7 +76,7 @@ def batch_tweets_dict(records):
         try: 
             id_tweet, text_tweet = extract_twitter_id_text(record_str)
         except KeyError: 
-            logging.warning(f'Skipping bad data {record_str}')
+            logging.warning('Skipping bad data ' +record_str)
 
         batch_dict.update({id_tweet:text_tweet})
         
