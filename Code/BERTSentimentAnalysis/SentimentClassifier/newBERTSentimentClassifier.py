@@ -4,6 +4,8 @@ from abc import abstractmethod, ABC
 import numpy as np
 import torch
 from torch import nn, optim
+from torch.utils.data import DataLoader
+
 
 class BERTSentimentClassifier(SentimentClassifierEncoder):
     def __init__(self, model: nn.Module, tokenizer, threads=None):
