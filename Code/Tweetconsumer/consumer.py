@@ -166,7 +166,9 @@ def main():
             logging.info("Classifying tweets...")
             start = time.process_time()
             predictions = sentimentclassifier.predict(np.array(list(batch_dict.values())), BATCH_SIZE)
-            print(time.process_time() - start)
+            t = round(time.process_time() - start,2)
+            with open(str(t)+".txt", "w") as file1: 
+                file1.write(str(t))
 
             exit(0)
 
