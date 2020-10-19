@@ -175,7 +175,7 @@ def main():
             #     print(class_names[pred]+':\n')
             #     print(message)
             #     print('\n\n')
-            break
+            exit(0)
 
             # for record in records:
             #     record_str = record.value().decode('utf-8')
