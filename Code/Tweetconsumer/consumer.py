@@ -166,10 +166,9 @@ def main():
             batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
 
             logging.info("Classifying tweets...")
-            # start = time.process_time()
+            start = time.process_time()
             predictions, messages = sentimentclassifier.predict(batch_dataloader)
-            # print(time.process_time() - start)
-            print("finished")
+            print(time.process_time() - start)
 
             # for pred, message in zip(predictions, messages):
             #     print(class_names[pred]+':\n')
