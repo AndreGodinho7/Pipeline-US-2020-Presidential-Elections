@@ -4,6 +4,8 @@ from abc import abstractmethod
 import numpy as np
 import torch
 from torch import nn, optim
+from torch.utils.data import DataLoader
+
 
 class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
     def __init__(self, model: nn.Module, tokenizer, threads=None):
@@ -20,34 +22,37 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
                        truncation=True,
                        return_tensors="pt")
 
-    def predict(self, dataloader):
-        # predictions = []
-        # messages = []
-
-        # encoding = self.tokenize(messages)
-
-        # input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
-        # attention_mask = encoding['attention_mask'].to(device=self.model.distillbert.device)
-
-        # outputs = self.model(input_ids, attention_mask)
-
-        # _, predictions = torch.max(outputs, dim=1)
-
-        # predictions = list(predictions.numpy())
+    def predict(self, messages: np.ndarray, batch_size):
 
         predictions = []
+        dataloader = DataLoader(messages, batch_size=batch_size)
+        
+        for batch in dataloader:
 
-        self.model.eval()
-        with torch.no_grad():
-            for batch in dataloader:
-                message = batch["message"]
-                input_ids = batch['input_ids'].to(self.model.distillbert.device)
-                attention_mask = batch['attention_mask'].to(self.model.distillbert.device)
+            encoding = self.tokenize(batch)
 
-                outputs = self.model(input_ids, attention_mask).numpy()
+            input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
+            attention_mask = encoding['attention_mask'].to(device=self.model.distillbert.device)
 
-                preds = outputs.argmax(1)
-                predictions.extend(preds)
+            outputs = self.model(input_ids, attention_mask).numpy()
+
+            preds = outputs.argmax(1)
+            predictions.extend(preds)
+
+
+        # predictions = []
+
+        # self.model.eval()
+        # with torch.no_grad():
+        #     for batch in dataloader:
+        #         message = batch["message"]
+        #         input_ids = batch['input_ids'].to(self.model.distillbert.device)
+        #         attention_mask = batch['attention_mask'].to(self.model.distillbert.device)
+
+        #         outputs = self.model(input_ids, attention_mask).numpy()
+
+        #         preds = outputs.argmax(1)
+        #         predictions.extend(preds)
 
         return predictions,  # 0 - negative ; 1 - neutral; 2 - positive
         
