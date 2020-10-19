@@ -40,15 +40,20 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
         self.model.eval()
         with torch.no_grad():
             for batch in dataloader:
+                print("chegou à batch")
                 message = batch["message"]
-                input_ids = batch['input_ids'].to(self.model.bert.device)
-                attention_mask = batch['attention_mask'].to(self.model.bert.device)
+                input_ids = batch['input_ids']
+                attention_mask = batch['attention_mask']
 
                 outputs = self.model(input_ids, attention_mask)
+                print("calculou outputs")
 
                 _, preds = torch.max(outputs, dim=1)
+                print("calculou preds")
+
                 predictions.extend(preds)
                 messages.extend(message)
+
 
 
         return predictions, messages # 0 - negative ; 1 - neutral; 2 - positive
