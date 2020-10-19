@@ -86,9 +86,9 @@ def batch_tweets_dict(records):
         try: 
             id_tweet, text_tweet = extract_twitter_id_text(record_str)
         except KeyError: 
-            logging.warning('Skipping bad data ' +record_str)
+            logging.warning('Skipping bad data: ' +record_str)
         except json.decoder.JSONDecodeError: 
-            logging.warning('Skipping bad data ' +record_str)
+            logging.warning('Skipping bad data: ' +record_str)
             continue
         
         batch_dict.update({id_tweet:text_tweet})
@@ -159,6 +159,8 @@ def main():
             # get batch of tweets in a dict {tweet ID: tweet text}
             batch_dict = batch_tweets_dict(records)
             
+            print(batch_dict)
+
             # sentiment classification
             batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
             batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
