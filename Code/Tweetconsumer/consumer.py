@@ -30,7 +30,7 @@ AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
 ## maximum number of messages to return
-MAX_POLL_RECORDS = 100 # TODO: how many records to poll?
+MAX_POLL_RECORDS = 16 # TODO: how many records to poll?
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
@@ -145,7 +145,7 @@ def main():
         logging.info('Model moved to the GPU: '+str(torch.cuda.get_device_name(0)))
 
     else:
-        sentimentclassifier.move_model_cpu()
+        # sentimentclassifier.move_model_cpu()
         logging.info('Model moved to the CPU.')
 
     # poll for new data
