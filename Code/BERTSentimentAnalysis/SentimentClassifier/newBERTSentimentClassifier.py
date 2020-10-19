@@ -37,8 +37,6 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
             preds = outputs.argmax(1)
             predictions.extend(preds)
 
-        predictions = []
-
         # self.model.eval()
         # with torch.no_grad():
         #     for batch in dataloader:
