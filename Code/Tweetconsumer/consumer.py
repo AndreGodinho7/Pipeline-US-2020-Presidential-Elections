@@ -169,7 +169,7 @@ def main():
             start = time.process_time()
             predictions = sentimentclassifier.predict(batch_dataloader)
             print(time.process_time() - start)
-
+            print(predictions)
             # for pred, message in zip(predictions, messages):
             #     print(class_names[pred]+':\n')
             #     print(message)

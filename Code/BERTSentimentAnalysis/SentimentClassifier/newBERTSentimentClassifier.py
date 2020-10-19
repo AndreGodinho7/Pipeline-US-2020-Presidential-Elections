@@ -34,7 +34,7 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
 
         # predictions = list(predictions.numpy())
 
-        predictions = []
+        # predictions = []
         # messages = []
 
         self.model.eval()
@@ -51,13 +51,13 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
                 _, preds = torch.max(outputs, dim=1)
                 print("calculou preds")
 
-                predictions.extend(preds)
-                print(len(predictions))
+                # predictions.extend(preds)
+                # print(len(predictions))
                 # messages.extend(message)
             print("saiu da batch")
-        print(predictions)
+        # print(predictions)
 
-        return predictions # 0 - negative ; 1 - neutral; 2 - positive
+        return preds # 0 - negative ; 1 - neutral; 2 - positive
         
 
     
