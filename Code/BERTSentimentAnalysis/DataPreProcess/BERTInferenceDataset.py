@@ -2,9 +2,6 @@ import torch
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
 
-import logging
-logging.basicConfig(level=logging.ERROR)
-
 PRE_TRAINED_MODEL_NAME = 'bert-base-cased' # cased letters are important for Sentiment analysis
 
 class BERTInferenceDataset(Dataset):
