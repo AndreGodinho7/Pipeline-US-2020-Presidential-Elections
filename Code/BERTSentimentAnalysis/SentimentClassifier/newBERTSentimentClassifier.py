@@ -20,32 +20,33 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
                               truncation=True,
                               return_tensors="pt")
 
-    def predict(self, dataloader):
-        # predictions = []
-
-        # encoding = self.tokenize(messages)
+    def predict(self, messages: np.ndarray, batch_size):
+        predictions = []
+        dataloader = DataLoader(messages, batch_size=batch_size)
         
-        # input_ids = encoding['input_ids'].to(device=self.model.bert.device)
-        # attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
+        for batch in dataloader:
+            encoding = self.tokenize(batch)
 
-        # outputs = self.model(input_ids, attention_mask)
+            input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
+            attention_mask = encoding['attention_mask'].to(device=self.model.distillbert.device)
 
-        # _, predictions = torch.max(outputs, dim=1)
+            outputs = self.model(input_ids, attention_mask).detach().numpy()
 
-        # predictions = list(predictions.numpy())
+            preds = outputs.argmax(1)
+            predictions.extend(preds)
 
         predictions = []
 
-        self.model.eval()
-        with torch.no_grad():
-            for batch in dataloader:
-                input_ids = batch['input_ids'].to(self.model.bert.device)
-                attention_mask = batch['attention_mask'].to(self.model.bert.device)
+        # self.model.eval()
+        # with torch.no_grad():
+        #     for batch in dataloader:
+        #         input_ids = batch['input_ids'].to(self.model.bert.device)
+        #         attention_mask = batch['attention_mask'].to(self.model.bert.device)
 
-                outputs = self.model(input_ids, attention_mask).numpy()
+        #         outputs = self.model(input_ids, attention_mask).numpy()
 
-                preds = outputs.argmax(1)
-                predictions.extend(preds)
+        #         preds = outputs.argmax(1)
+        #         predictions.extend(preds)
 
         return predictions # 0 - negative ; 1 - neutral; 2 - positive
         
