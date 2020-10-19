@@ -75,6 +75,7 @@ def extract_twitter_id_text(record):
         record_json = json.loads(record)
     except json.decoder.JSONDecodeError: 
         print("Error in decoding json: "+record)
+        print("KEYS ")
 
     if 'extended_tweet' in record_json.keys():
         return record_json['id_str'], record_json['extended_tweet']['full_text']
@@ -86,7 +87,7 @@ def batch_tweets_dict(records):
     for record in records:
         # convert bytes to str
         record_str = record.value().decode('utf-8') 
-
+        print("RECORD: "+record_str)
         try: 
             id_tweet, text_tweet = extract_twitter_id_text(record_str)
         except KeyError: 
@@ -159,6 +160,8 @@ def main():
             
             # get batch of tweets in a dict {tweet ID: tweet text}
             batch_dict = batch_tweets_dict(records)
+            
+            # sentiment classification
             batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
             batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
 
