@@ -16,11 +16,11 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
 
     
     def tokenize(self, messages):
-        self.tokenizer(messages, 
-                       return_token_type_ids=False,
-                       padding='longest',
-                       truncation=True,
-                       return_tensors="pt")
+        return self.tokenizer(messages, 
+                              return_token_type_ids=False,
+                              padding='longest',
+                              truncation=True,
+                              return_tensors="pt")
 
     def predict(self, messages: np.ndarray, batch_size):
 
@@ -28,7 +28,7 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
         dataloader = DataLoader(messages, batch_size=batch_size)
         
         for batch in dataloader:
-
+            
             encoding = self.tokenize(batch)
 
             input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
