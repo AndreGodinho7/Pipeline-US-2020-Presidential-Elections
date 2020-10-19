@@ -52,7 +52,9 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
                 print("calculou preds")
 
                 predictions.extend(preds)
+                print(len(predictions))
                 # messages.extend(message)
+            print("saiu da batch")
         print(predictions)
 
         return predictions # 0 - negative ; 1 - neutral; 2 - positive
