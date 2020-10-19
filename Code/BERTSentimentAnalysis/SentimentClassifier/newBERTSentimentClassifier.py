@@ -4,6 +4,8 @@ from abc import abstractmethod, ABC
 import numpy as np
 import torch
 from torch import nn, optim
+from torch.utils.data import DataLoader
+
 
 class BERTSentimentClassifier(SentimentClassifierEncoder):
     def __init__(self, model: nn.Module, tokenizer, threads=None):
@@ -34,8 +36,6 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
 
             preds = outputs.argmax(1)
             predictions.extend(preds)
-
-        predictions = []
 
         # self.model.eval()
         # with torch.no_grad():

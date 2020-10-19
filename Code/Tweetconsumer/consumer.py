@@ -165,7 +165,6 @@ def main():
 
             logging.info("Classifying tweets...")
             start = time.process_time()
-            print(np.array(list(batch_dict.values())))
             predictions = sentimentclassifier.predict(np.array(list(batch_dict.values())), BATCH_SIZE)
             print(time.process_time() - start)
 
