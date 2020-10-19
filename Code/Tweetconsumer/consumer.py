@@ -71,11 +71,7 @@ def create_kafka_consumer(jsonData):
     return kafkaConsumer
 
 def extract_twitter_id_text(record):
-    try: 
-        record_json = json.loads(record)
-    except json.decoder.JSONDecodeError: 
-        print("Error in decoding json: "+record)
-        print("KEYS ")
+    record_json = json.loads(record)
 
     if 'extended_tweet' in record_json.keys():
         return record_json['id_str'], record_json['extended_tweet']['full_text']
@@ -87,12 +83,14 @@ def batch_tweets_dict(records):
     for record in records:
         # convert bytes to str
         record_str = record.value().decode('utf-8') 
-        print("RECORD: "+record_str)
         try: 
             id_tweet, text_tweet = extract_twitter_id_text(record_str)
         except KeyError: 
             logging.warning('Skipping bad data ' +record_str)
-
+        except json.decoder.JSONDecodeError: 
+            logging.warning('Skipping bad data ' +record_str)
+            continue
+        
         batch_dict.update({id_tweet:text_tweet})
         
     return batch_dict
