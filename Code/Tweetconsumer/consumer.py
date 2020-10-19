@@ -159,8 +159,6 @@ def main():
             # get batch of tweets in a dict {tweet ID: tweet text}
             batch_dict = batch_tweets_dict(records)
             
-            print(batch_dict)
-
             # sentiment classification
             batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
             batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
@@ -169,11 +167,7 @@ def main():
             start = time.process_time()
             predictions = sentimentclassifier.predict(batch_dataloader)
             print(time.process_time() - start)
-            print(predictions)
-            # for pred, message in zip(predictions, messages):
-            #     print(class_names[pred]+':\n')
-            #     print(message)
-            #     print('\n\n')
+
             exit(0)
 
             # for record in records:

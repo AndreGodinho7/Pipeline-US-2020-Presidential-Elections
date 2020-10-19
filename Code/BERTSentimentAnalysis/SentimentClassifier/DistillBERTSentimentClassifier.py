@@ -36,7 +36,6 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
         # predictions = list(predictions.numpy())
 
         predictions = []
-        messages = []
 
         self.model.eval()
         with torch.no_grad():
@@ -45,13 +44,12 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
                 input_ids = batch['input_ids'].to(self.model.distillbert.device)
                 attention_mask = batch['attention_mask'].to(self.model.distillbert.device)
 
-                outputs = self.model(input_ids, attention_mask)
+                outputs = self.model(input_ids, attention_mask).numpy()
 
-                _, preds = torch.max(outputs, dim=1)
+                preds = outputs.argmax(1)
                 predictions.extend(preds)
-                messages.extend(message)
 
-        return predictions, messages # 0 - negative ; 1 - neutral; 2 - positive
+        return predictions,  # 0 - negative ; 1 - neutral; 2 - positive
         
 
     def predict_results(self, **kwargs):
