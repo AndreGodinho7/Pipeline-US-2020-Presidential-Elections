@@ -1,13 +1,8 @@
-from DataProcessInterface import DataProcessInterface
-
 import torch
 from torch.utils.data import Dataset
 from transformers import BertTokenizer
 
-import logging
-logging.basicConfig(level=logging.ERROR)
-
-PRE_TRAINED_MODEL_NAME = 'bert-base-cased' # cased letters are important for Sentiment analysis
+import pandas as pd
 
 class BERTFormatDataset(Dataset):
     """
@@ -18,37 +13,29 @@ class BERTFormatDataset(Dataset):
     Subclasses could also optionally overwrite __len__(), which is expected to 
     return the size of the dataset by many Sampler implementations and the default options of DataLoader.
     """
-    def __init__(self, data, max_len, device):
-        self.messages = data.content.to_numpy()
-        self.sentiments = data.sentiment.to_numpy()
-        self.tokenizer = BertTokenizer.from_pretrained(PRE_TRAINED_MODEL_NAME)
+    def __init__(self, max_len, encoder, messages, labels):
+        # self.messages = dataframe.content.to_numpy()
+        # self.sentiments = data.sentiment.to_numpy()
+        self.messages = messages
+        self.sentiments = labels
         self.max_len = max_len
-        self.device = device
+        self.encoder = encoder
 
     def __len__(self):
         return len(self.messages)
 
     def __getitem__(self, index):
         def dataPreprocess(message):
-            # encoding = self.tokenizer.encode_plus(
-            # message,
-            # add_special_tokens=True,
-            # max_length=self.max_len,
-            # return_token_type_ids=False,
-            # pad_to_max_length=True,
-            # return_attention_mask=True,
-            # return_tensors='pt',
-            # )
-            encoding = self.tokenizer(
-                message,
-                return_tensors='pt',
-                padding='longest',
-                truncation=True,
-                max_length=self.max_len,
-                return_attention_mask=True,
-                return_token_type_ids=False,
-                add_special_tokens=True
-            ).to(device=self.model.device)
+            encoding = self.encoder.tokenizer(
+                        message,
+                        return_tensors='pt',
+                        pad_to_max_length=True,
+                        truncation=True,
+                        max_length=self.max_len,
+                        return_attention_mask=True,
+                        return_token_type_ids=False,
+                        add_special_tokens=True
+            )
             return encoding
 
         message = str(self.messages[index]) 

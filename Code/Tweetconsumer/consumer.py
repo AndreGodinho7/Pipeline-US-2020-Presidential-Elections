@@ -4,15 +4,22 @@ import torch
 
 from BERTSentimentAnalysis.DataPreProcess.BERTFormatDataloader import BERTFormatDataloader
 from BERTSentimentAnalysis.DataPreProcess.BERTInferenceDataset import BERTInferenceDataset
-from BERTSentimentAnalysis.SentimentClassifier.BERTSentimentClassifier import BERTSentimentClassifier
+# from BERTSentimentAnalysis.SentimentClassifier.BERTSentimentClassifier import BERTSentimentClassifier
+# from BERTSentimentAnalysis.SentimentClassifier.BERT import BERT
+
+from BERTSentimentAnalysis.SentimentClassifier.newBERTSentimentClassifier import BERTSentimentClassifier
 from BERTSentimentAnalysis.SentimentClassifier.BERT import BERT
+from BERTSentimentAnalysis.SentimentClassifier.DistillBERTSentimentClassifier import DistillBERTSentimentClassifier
+from BERTSentimentAnalysis.SentimentClassifier.DistillBERT import DistillBERT
 
 import json
 import numpy as np
 import torch
 import logging
 from confluent_kafka import Consumer, KafkaError
-from transformers import BertTokenizer
+from transformers import BertTokenizer, DistilBertTokenizer
+import time
+
 
 # logging configs
 LOGGING_FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
@@ -37,11 +44,13 @@ RANDOM_SEED = 10
 MAX_LEN = 512
 BATCH_SIZE = 16
 n_GPU = 0
-EPOCHS = 10
 CLASSES = 3
 class_names = ['negative', 'neutral', 'positive']
 
-#MODEL_NAME = '/home/andregodinho06/Projects/Twitter Project/reviews_bert_classifier.bin'
+NUM_THREADS = 1
+
+#MODEL_NAME = '/home/andregodinho06/Projects/Twitter Project/bert_classifier.bin'
+#MODEL_NAME = '/home/andregodinho06/Projects/Twitter Project/distillbert_classifier.bin'
 USE_GPU = False
 
 np.random.seed(RANDOM_SEED)
@@ -88,7 +97,8 @@ def main():
     logging.getLogger().setLevel(logging.INFO)
     
     consumer_config_path = sys.argv[1]
-    model_path = sys.argv[2]
+    model = sys.argv[2]
+    model_path = sys.argv[3]
 
     with open(consumer_config_path) as f:
         configurations = json.load(f)
@@ -96,26 +106,44 @@ def main():
     kafkaConsumer = create_kafka_consumer(configurations)
     logging.info("Created Kafka Consumer.")
 
-    # if there's a GPU available...
-    if torch.cuda.is_available() and USE_GPU:    
-        device = torch.device("cuda")
-        logging.info('There are '+str(torch.cuda.device_count())+' GPU(s) available.')
-        logging.info('We will use the GPU: '+str(torch.cuda.get_device_name(0)))
+    if model == 'bert':
+        # load BERT tokenizer
+        tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+
+        # load BERT sentiment classifier
+        logging.info("Loading fine-tuned model...")
+        fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
+        model = BERT(CLASSES)
+        model.load_state_dict(fine_tuned_weights, strict=False)
+        sentimentclassifier = BERTSentimentClassifier(model, tokenizer, NUM_THREADS)
+        logging.info("Model has been loaded.")
+    
+    elif model == 'distillbert':
+        # load distillbert tokenizer
+        tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
+
+        # load DistillBERT sentiment classifier
+        logging.info("Loading fine-tuned model...")
+        fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
+        model = DistillBERT(CLASSES)
+        model.load_state_dict(fine_tuned_weights, strict=False)
+        sentimentclassifier = DistillBERTSentimentClassifier(model, tokenizer, NUM_THREADS)
+        logging.info("Model has been loaded.")
 
     else:
-        logging.info('Using the CPU.')
-        device = torch.device("cpu")
+        logging.ERROR("Input model not correct. Please insert 'bert' or 'distillbert'")
+        exit(1)
 
-    # load BERT sentiment classifier
-    logging.info("Loading fine-tuned model...")
-    fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
-    model = BERT(CLASSES)
-    model.load_state_dict(fine_tuned_weights, strict=False)
-    bert_sentiment_classifier = BERTSentimentClassifier(model, device)
-    logging.info("Model has been loaded.")
 
-    # load BERT tokenizer
-    bert_tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
+    # if there's a GPU available...
+    if torch.cuda.is_available() and USE_GPU:    
+        sentimentclassifier.move_model_gpu()
+        logging.info('There are '+str(torch.cuda.device_count())+' GPU(s) available.')
+        logging.info('Model moved to the GPU: '+str(torch.cuda.get_device_name(0)))
+
+    else:
+        sentimentclassifier.move_model_cpu()
+        logging.info('Model moved to the CPU.')
 
     # poll for new data
     while(True):
@@ -127,17 +155,19 @@ def main():
             
             # get batch of tweets in a dict {tweet ID: tweet text}
             batch_dict = batch_tweets_dict(records)
-            batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, bert_tokenizer)
+            batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
             batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
-            
-            logging.info("Classifying tweets...")
-            predictions, messages = bert_sentiment_classifier.predict(data_loader=batch_dataloader,
-                                                                      device=device)
 
-            for pred, message in zip(predictions, messages):
-                print(class_names[pred]+':\n')
-                print(message)
-                print('\n\n')
+            logging.info("Classifying tweets...")
+            start = time.process_time()
+            predictions, messages = sentimentclassifier.predict(batch_dataloader)
+            print(time.process_time() - start)
+
+
+            # for pred, message in zip(predictions, messages):
+            #     print(class_names[pred]+':\n')
+            #     print(message)
+            #     print('\n\n')
             break
 
             # for record in records:

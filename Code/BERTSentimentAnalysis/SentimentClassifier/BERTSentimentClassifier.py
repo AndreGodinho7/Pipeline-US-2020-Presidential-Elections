@@ -79,6 +79,9 @@ class BERTSentimentClassifier(SentimentClassifier):
     def predict(self, **kwargs):
         data_loader = kwargs.get('data_loader')
         device = kwargs.get('device')
+        threads = kwargs.get('threads')
+
+        torch.set_num_threads(threads)
 
         predictions = []
         messages = []
