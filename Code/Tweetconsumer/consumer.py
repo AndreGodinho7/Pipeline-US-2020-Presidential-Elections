@@ -62,7 +62,9 @@ def create_kafka_consumer(jsonData):
         'group.id': jsonData.get('groupid'),
         'auto.offset.reset': AUTO_OFFSET_RESET,
         'enable.auto.commit': ENABLE_AUTO_COMMIT,
-        'max.poll.interval.ms' : MAX_POLL_INTERVAL_MS
+        'max.poll.interval.ms' : MAX_POLL_INTERVAL_MS,
+        'session.timeout.ms': 100000,
+        'heartbeat.interval.ms': 30000
     }
 
     kafkaConsumer = Consumer(conf)
