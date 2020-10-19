@@ -160,12 +160,12 @@ def main():
             batch_dict = batch_tweets_dict(records)
             
             # sentiment classification
-            batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
-            batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
+            # batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
+            # batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
 
             logging.info("Classifying tweets...")
             start = time.process_time()
-            predictions = sentimentclassifier.predict(batch_dataloader)
+            predictions = sentimentclassifier.predict(np.array(list(batch_dict.values())))
             print(time.process_time() - start)
 
             exit(0)
