@@ -47,7 +47,7 @@ n_GPU = 0
 CLASSES = 3
 class_names = ['negative', 'neutral', 'positive']
 
-NUM_THREADS = 4
+NUM_THREADS = 1
 
 #MODEL_NAME = '/home/andregodinho06/Projects/Twitter Project/bert_classifier.bin'
 #MODEL_NAME = '/home/andregodinho06/Projects/Twitter Project/distillbert_classifier.bin'
