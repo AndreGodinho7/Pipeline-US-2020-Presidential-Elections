@@ -71,7 +71,11 @@ def create_kafka_consumer(jsonData):
     return kafkaConsumer
 
 def extract_twitter_id_text(record):
-    record_json = json.loads(record)
+    try: 
+        record_json = json.loads(record)
+    except json.decoder.JSONDecodeError: 
+        print("Error in decoding json: "+record)
+
     if 'extended_tweet' in record_json.keys():
         return record_json['id_str'], record_json['extended_tweet']['full_text']
     
