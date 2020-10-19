@@ -28,7 +28,6 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
         dataloader = DataLoader(messages, batch_size=batch_size)
         
         for batch in dataloader:
-            
             encoding = self.tokenize(batch)
 
             input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
