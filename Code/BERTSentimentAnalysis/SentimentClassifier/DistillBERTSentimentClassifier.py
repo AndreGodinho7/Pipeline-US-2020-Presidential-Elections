@@ -34,7 +34,7 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
             input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
             attention_mask = encoding['attention_mask'].to(device=self.model.distillbert.device)
 
-            outputs = self.model(input_ids, attention_mask).numpy()
+            outputs = self.model(input_ids, attention_mask).detach().numpy()
 
             preds = outputs.argmax(1)
             predictions.extend(preds)
