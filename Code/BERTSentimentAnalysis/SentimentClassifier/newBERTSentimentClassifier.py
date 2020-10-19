@@ -55,7 +55,7 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
                 # messages.extend(message)
         print(predictions)
 
-        return predictions, messages # 0 - negative ; 1 - neutral; 2 - positive
+        return predictions # 0 - negative ; 1 - neutral; 2 - positive
         
 
     

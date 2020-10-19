@@ -167,7 +167,7 @@ def main():
 
             logging.info("Classifying tweets...")
             start = time.process_time()
-            predictions, messages = sentimentclassifier.predict(batch_dataloader)
+            predictions = sentimentclassifier.predict(batch_dataloader)
             print(time.process_time() - start)
 
             # for pred, message in zip(predictions, messages):
