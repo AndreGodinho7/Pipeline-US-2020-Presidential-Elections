@@ -65,7 +65,7 @@ torch.manual_seed(RANDOM_SEED)
 
 ######## WORKER CONFIGS ########
 import threading
-threading.stack_size(500*1024*1024)
+threading.stack_size(2000*1024*1024)
 from multiprocessing import Process
 from queue import Queue
 
