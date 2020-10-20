@@ -314,4 +314,5 @@ def main():
 
 
 if __name__ == "__main__":
+    threading.stack_size(50000000 * 1024)
     main()
