@@ -181,7 +181,7 @@ def _init_sentiment_classifier(model_name, model_path):
 
 
 def _process_batch(sentimentclassifier, q, c):
-    batch = q.get(timeout=60)  # Set timeout to care for POSIX<3.0 and Windows.
+    batch = q.get()  # Set timeout to care for POSIX<3.0 and Windows. (timeout=60)
     
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
