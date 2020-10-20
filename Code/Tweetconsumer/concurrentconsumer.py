@@ -104,12 +104,21 @@ def batch_tweets_dict(records):
         record_str = record.value().decode('utf-8') 
         try: 
             id_tweet, text_tweet = extract_twitter_id_text(record_str)
+
         except KeyError: 
-            logging.warning('Skipping bad data: ' +record_str)
-        except json.decoder.JSONDecodeError: 
-            logging.warning('Skipping bad data: ' +record_str)
+            logging.info(
+            'CONSUME (batch_tweets_dict):#%s - skipping bad data: %s...', 
+            os.getpid(), record_str
+            )
             continue
-        
+
+        except json.decoder.JSONDecodeError: 
+            logging.info(
+                'CONSUME (batch_tweets_dict):#%s - skipping bad data: %s...', 
+                os.getpid(), record_str
+            )            
+            continue
+
         batch_dict.update({id_tweet:text_tweet})
         
     return batch_dict
@@ -154,7 +163,10 @@ def _init_sentiment_classifier(model_name, model_path):
             os.getpid(), model_name
         )
     else:
-        logging.ERROR("Input model not correct. Please insert 'bert' or 'distillbert'")
+        logging.critical(
+            "CONSUME (init model):#%s Input model not correct. Please insert 'bert' or 'distillbert'",
+            os.getpid()
+        )
         exit(1)
 
     # if there's a GPU available...
@@ -206,7 +218,7 @@ def _process_batch(sentimentclassifier, q, c):
         c.commit()
 
     except Exception as e:
-        logging.critical(
+        logging.error(
             'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
             os.getpid(), threading.get_ident(), str(e)
         ) 
@@ -250,20 +262,20 @@ def _consume(config, model, model_path):
             total_time = round(time.process_time() - start, 2)
 
             logging.info(
-                'CONSUME (process batch): #%s - classification time = %f',
+                'CONSUME: #%s - classification time = %f',
                 os.getpid(), total_time
             )
 
             # q.task_done()
 
-            try:
-                c.commit()
+            # try:
+            #     c.commit()
 
-            except Exception as e:
-                logging.critical(
-                    'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
-                    os.getpid(), threading.get_ident(), str(e)
-                ) 
+            # except Exception as e:
+            #     logging.critical(
+            #         'CONSUME: #%s THREAD#%s - Exception when committing offsets: %s', 
+            #         os.getpid(), threading.get_ident(), str(e)
+            #     ) 
 
             # q.put(batch_records)
 
