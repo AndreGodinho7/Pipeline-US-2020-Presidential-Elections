@@ -68,9 +68,14 @@ import threading
 from multiprocessing import Process
 from queue import Queue
 
-
 NUM_WORKERS = 1
 NUM_THREADS = 1
+
+
+barrier = threading.Barrier(NUM_THREADS)
+
+
+
 
 def create_kafka_config(jsonData):
     conf = {
@@ -182,7 +187,6 @@ def _init_sentiment_classifier(model_name, model_path):
 
 def _process_batch(sentimentclassifier, q, c):
     batch = q.get()  # Set timeout to care for POSIX<3.0 and Windows. (timeout=60)
-    barrier = threading.Barrier(NUM_THREADS)
 
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
@@ -209,10 +213,10 @@ def _process_batch(sentimentclassifier, q, c):
     print("ola3",flush=True)
 
 
-    logging.info(
-        'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
-        os.getpid(), threading.get_ident(), total_time
-    )
+    # logging.info(
+    #     'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
+    #     os.getpid(), threading.get_ident(), total_time
+    # )
 
     q.task_done()
 
