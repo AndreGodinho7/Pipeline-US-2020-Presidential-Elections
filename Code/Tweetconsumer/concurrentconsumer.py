@@ -268,14 +268,14 @@ def _consume(config, model, model_path):
 
             # q.task_done()
 
-            # try:
-            #     c.commit()
+            try:
+                c.commit()
 
-            # except Exception as e:
-            #     logging.critical(
-            #         'CONSUME: #%s THREAD#%s - Exception when committing offsets: %s', 
-            #         os.getpid(), threading.get_ident(), str(e)
-            #     ) 
+            except Exception as e:
+                logging.critical(
+                    'CONSUME: #%s THREAD#%s - Exception when committing offsets: %s', 
+                    os.getpid(), threading.get_ident(), str(e)
+                ) 
 
             # q.put(batch_records)
 
