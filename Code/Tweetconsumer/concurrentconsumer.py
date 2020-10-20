@@ -72,7 +72,7 @@ NUM_WORKERS = 1
 NUM_THREADS = 1
 
 
-barrier = threading.Barrier(NUM_THREADS)
+barrier = threading.Barrier(10)
 
 
 
@@ -192,25 +192,24 @@ def _process_batch(sentimentclassifier, q, c):
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
         os.getpid(), threading.get_ident(), len(batch)
     )
-    print("ola0",flush=True)
+    print(str(threading.get_ident())+" ola0",flush=True)
     # batch needs to be in np.ndarray format for batches of dataloader
     batch = np.array(list(batch.values()))
 
-    print("ola1",flush=True)
+    print(str(threading.get_ident())+" ola1",flush=True)
 
     start = time.process_time()
     
-    print("ola2",flush=True)
+    print(str(threading.get_ident())+" ola2",flush=True)
     
     print(round(time.process_time() - start, 2), flush=True)
-    time.sleep(4)
 
     # BARRIER
     barrier.wait()
 
     # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
     print(round(time.process_time() - start, 2), flush=True)
-    print("ola3",flush=True)
+    print(str(threading.get_ident())+" ola3",flush=True)
 
 
     # logging.info(
