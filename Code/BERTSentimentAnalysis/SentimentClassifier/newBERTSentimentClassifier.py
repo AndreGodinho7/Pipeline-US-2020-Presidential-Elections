@@ -31,9 +31,8 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
 
             input_ids = encoding['input_ids'].to(device=self.model.bert.device)
             attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
-            print(self.model)
             # try: 
-            outputs = self.model(input_ids, attention_mask).numpy()
+            outputs = self.model(input_ids, attention_mask)
             preds = outputs.argmax(1)
 
             predictions.extend(preds)
