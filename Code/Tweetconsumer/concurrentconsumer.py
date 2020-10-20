@@ -185,7 +185,7 @@ def _process_batch(sentimentclassifier, q, c):
     
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
-        os.getpid(), threading.get_ident(), batch
+        os.getpid(), threading.get_ident(), len(batch)
     )
 
     # batch needs to be in np.ndarray format for batches of dataloader
