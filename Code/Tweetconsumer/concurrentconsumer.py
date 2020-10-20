@@ -243,12 +243,13 @@ def _consume(config, model, model_path):
             if len(records) == 0:
                 continue
             
+            start = time.process_time()
+            print(time.process_time() - start)
+            
             # get batch of tweets in a dict {tweet ID: tweet text} (able to get long tweets)
             batch_records = batch_tweets_dict(records)
 
             q.put(batch_records)
-            print(q.qsize())
-            print("is full? "+str(q.full()))
 
             # Use default daemon=False to stop threads gracefully in order to
             # release resources properly.
