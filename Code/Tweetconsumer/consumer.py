@@ -163,6 +163,8 @@ def main():
             # batch_dataset = BERTInferenceDataset(list(batch_dict.values()), MAX_LEN, tokenizer)
             # batch_dataloader = BERTFormatDataloader(batch_dataset, BATCH_SIZE, n_GPU).getDataloader()
 
+            print(list(batch_dict.keys()))
+
             logging.info("Classifying tweets...")
             start = time.process_time()
             predictions = sentimentclassifier.predict(np.array(list(batch_dict.values())), BATCH_SIZE)
@@ -185,6 +187,8 @@ def main():
                     logging.info("Commiting consumer offsets...")
                     kafkaConsumer.commit()
                     logging.info("Offsets have been committed.")
+
+            exit(0)
 
             except Exception as e:
                 logging.critical('Thown exception when committing offsets '+str(e))
