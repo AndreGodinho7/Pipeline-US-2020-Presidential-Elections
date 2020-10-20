@@ -25,8 +25,9 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
     def predict(self, messages: np.ndarray, batch_size):
         predictions = []
         dataloader = DataLoader(messages, batch_size=batch_size)
-
+        print(len(dataloader))
         for batch in dataloader:
+            print(len(batch))
             encoding = self.tokenize(batch)
 
             input_ids = encoding['input_ids'].to(device=self.model.bert.device)
