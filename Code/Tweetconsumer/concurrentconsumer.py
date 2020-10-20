@@ -182,7 +182,8 @@ def _init_sentiment_classifier(model_name, model_path):
 
 def _process_batch(sentimentclassifier, q, c):
     batch = q.get()  # Set timeout to care for POSIX<3.0 and Windows. (timeout=60)
-    
+    barrier = threading.Barrier(NUM_THREADS)
+
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
         os.getpid(), threading.get_ident(), len(batch)
@@ -195,6 +196,7 @@ def _process_batch(sentimentclassifier, q, c):
     print("ola2")
     total_time = round(time.process_time() - start, 2)
     time.sleep(4)
+    barrier.wait()
     # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
     total_time = round(time.process_time() - start, 2)
     print("ola3")
