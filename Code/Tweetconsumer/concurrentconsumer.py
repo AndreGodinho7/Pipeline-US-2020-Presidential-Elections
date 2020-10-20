@@ -195,8 +195,8 @@ def _process_batch(sentimentclassifier, q, c):
 
     start = time.process_time()
     predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
-    print(predictions, flush=True)
     total_time = round(time.process_time() - start, 2)
+    print(total_time)
 
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
@@ -242,9 +242,6 @@ def _consume(config, model, model_path):
             
             if len(records) == 0:
                 continue
-            
-            start = time.process_time()
-            print(time.process_time() - start)
             
             # get batch of tweets in a dict {tweet ID: tweet text} (able to get long tweets)
             batch_records = batch_tweets_dict(records)
