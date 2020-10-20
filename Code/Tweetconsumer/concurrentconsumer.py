@@ -115,15 +115,15 @@ def batch_tweets_dict(records):
         
     return batch_dict
 
-def _init_sentiment_classifier(model, model_path):
-    if model == 'bert':
+def _init_sentiment_classifier(model_name, model_path):
+    if model_name == 'bert':
         # load BERT tokenizer
         tokenizer = BertTokenizer.from_pretrained('bert-base-cased')
 
         # load BERT sentiment classifier
         logging.info(
             'CONSUME (init model):#%s - Loading fine-tuned %s...', 
-            os.getpid(), model
+            os.getpid(), model_name
         )
 
         fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
@@ -133,17 +133,17 @@ def _init_sentiment_classifier(model, model_path):
         
         logging.info(
             'CONSUME (init model):#%s - %s has been loaded', 
-            os.getpid(), model
+            os.getpid(), model_name
         )
     
-    elif model == 'distillbert':
+    elif model_name == 'distillbert':
         # load distillbert tokenizer
         tokenizer = DistilBertTokenizer.from_pretrained('distilbert-base-uncased')
 
         # load DistillBERT sentiment classifier
         logging.info(
             'CONSUME (init model):#%s - Loading fine-tuned %s...', 
-            os.getpid(), model
+            os.getpid(), model_name
         )
         fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
         model = DistillBERT(CLASSES)
@@ -152,7 +152,7 @@ def _init_sentiment_classifier(model, model_path):
         
         logging.info(
             'CONSUME (init model):#%s - %s has been loaded', 
-            os.getpid(), model
+            os.getpid(), model_name
         )
     else:
         logging.ERROR("Input model not correct. Please insert 'bert' or 'distillbert'")
