@@ -64,7 +64,7 @@ torch.manual_seed(RANDOM_SEED)
 
 ######## WORKER CONFIGS ########
 import threading
-from multiprocessing import Process
+from multiprocessing import Process, Barrier
 from queue import Queue
 
 
@@ -133,8 +133,12 @@ def _init_sentiment_classifier(model_name, model_path):
             'CONSUME (init model):#%s - Loading fine-tuned %s...', 
             os.getpid(), model_name
         )
-
+        
         fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
+
+        # BARRIER when loading
+        threading.Barrier.wait(NUM_WORKERS)
+
         model = BERT(CLASSES)
         model.load_state_dict(fine_tuned_weights, strict=False)
         sentimentclassifier = BERTSentimentClassifier(model, tokenizer, NUM_THREADS)
@@ -153,7 +157,12 @@ def _init_sentiment_classifier(model_name, model_path):
             'CONSUME (init model):#%s - Loading fine-tuned %s...', 
             os.getpid(), model_name
         )
+
         fine_tuned_weights = torch.load(model_path, map_location=torch.device("cpu"))
+        
+        # BARRIER when loading
+        threading.Barrier.wait(NUM_WORKERS)
+        
         model = DistillBERT(CLASSES)
         model.load_state_dict(fine_tuned_weights, strict=False)
         sentimentclassifier = DistillBERTSentimentClassifier(model, tokenizer, NUM_THREADS)
@@ -337,7 +346,6 @@ def main():
         for _ in range(config['num_workers']-num_alive):
             p = Process(target=_consume, daemon=True, args=(config, model, model_path))
             p.start()
-            time.sleep(1)
             workers.append(p)
             logging.info(
                 'MAIN: Starting worker #%s', 
