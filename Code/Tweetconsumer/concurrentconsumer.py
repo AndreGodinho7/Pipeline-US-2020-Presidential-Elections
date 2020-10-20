@@ -247,6 +247,8 @@ def _consume(config, model, model_path):
             batch_records = batch_tweets_dict(records)
 
             q.put(batch_records)
+            print(q.qsize())
+            print("is full? "+str(q.full()))
 
             # Use default daemon=False to stop threads gracefully in order to
             # release resources properly.
