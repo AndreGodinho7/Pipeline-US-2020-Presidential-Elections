@@ -193,9 +193,9 @@ def _process_batch(sentimentclassifier, q, c):
     print("ola1")
     start = time.process_time()
     print("ola2")
-
-    # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+    total_time = round(time.process_time() - start, 2)
     time.sleep(4)
+    # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
     total_time = round(time.process_time() - start, 2)
     print("ola3")
 
