@@ -13,12 +13,11 @@ class BERT(nn.Module):
         self.out = nn.Linear(self.bert.config.hidden_size, n_classes)
 
     def forward(self, input_ids, attention_mask):
-        print(self.bert)
+        print(attention_mask)
 
         _, pooled_output = self.bert(
             input_ids=input_ids, # indices of input sequence tokens in the vocabulary
             attention_mask=attention_mask # mask to avoid performing attention on padding token indices
         )
-        print("POOLED!")
         output = self.dropout(pooled_output)
         return self.out(output)
