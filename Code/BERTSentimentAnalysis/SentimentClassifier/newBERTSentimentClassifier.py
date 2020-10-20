@@ -25,22 +25,22 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
     def predict(self, messages: np.ndarray, batch_size):
         predictions = []
         dataloader = DataLoader(messages, batch_size=batch_size)
-        logging.info("ENTREII NO PREDICT")
+        print("ENTREII NO PREDICT")
         for batch in dataloader:
             encoding = self.tokenize(batch)
-            logging.info("encoding done")
+            print("encoding done")
 
             input_ids = encoding['input_ids'].to(device=self.model.bert.device)
             attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
-            logging.info("input ids e attention mask done")
+            print("input ids e attention mask done")
 
             outputs = self.model(input_ids, attention_mask).detach().numpy()
-            logging.info("outputs done")
+            print("outputs done")
 
             preds = outputs.argmax(1)
             predictions.extend(preds)
-            logging.info("predictions done")
-        logging.info("return done")
+            print("predictions done")
+        print("return done")
 
 
         # self.model.eval()
