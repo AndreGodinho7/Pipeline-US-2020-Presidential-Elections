@@ -62,9 +62,7 @@ def create_kafka_consumer(jsonData):
         'group.id': jsonData.get('groupid'),
         'auto.offset.reset': AUTO_OFFSET_RESET,
         'enable.auto.commit': ENABLE_AUTO_COMMIT,
-        'max.poll.interval.ms' : MAX_POLL_INTERVAL_MS,
-        'session.timeout.ms': 100000,
-        'heartbeat.interval.ms': 30000
+        'max.poll.interval.ms' : MAX_POLL_INTERVAL_MS
     }
 
     kafkaConsumer = Consumer(conf)
@@ -170,8 +168,6 @@ def main():
             predictions = sentimentclassifier.predict(np.array(list(batch_dict.values())), BATCH_SIZE)
             t = round(time.process_time() - start,2)
             print(t)
-
-            exit(0)
 
             # for record in records:
             #     record_str = record.value().decode('utf-8')
