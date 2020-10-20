@@ -203,7 +203,7 @@ def _process_batch(sentimentclassifier, q, c):
         os.getpid(), threading.get_ident(), total_time
     )
 
-    q.task_done()
+    # q.task_done()
     exit(0)
     try:
         c.commit()
@@ -223,7 +223,6 @@ def _consume(config, model, model_path):
     c = Consumer(**config['kafka_kwargs'])
     c.subscribe([config['topic']])
     q = Queue(maxsize=config['num_threads'])
-    print(q.maxsize)
 
     sentimentclassifier = _init_sentiment_classifier(model, model_path)
 
