@@ -14,7 +14,7 @@ class BERT(nn.Module):
 
     def forward(self, input_ids, attention_mask):
         try: 
-            print("ola")
+            
             _, pooled_output = self.bert(
                 input_ids=input_ids, # indices of input sequence tokens in the vocabulary
                 attention_mask=attention_mask # mask to avoid performing attention on padding token indices
