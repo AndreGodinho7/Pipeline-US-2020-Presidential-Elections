@@ -24,13 +24,13 @@ AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
 ## maximum number of messages to return
-MAX_POLL_RECORDS = 100 # TODO: how many records to poll?
+MAX_POLL_RECORDS = 1000 # TODO: how many records to poll?
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
 
 ## maximum amount of time between two .poll() calls before declaring the consumer dead
-POLL_INTERVAL_MIN = 20
+POLL_INTERVAL_MIN = 60
 MAX_POLL_INTERVAL_MS = POLL_INTERVAL_MIN*60*1000 # TODO: how many milliseconds to wait between poll?
 
 
