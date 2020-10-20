@@ -38,6 +38,8 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
             preds = outputs.argmax(1)
             predictions.extend(preds)
 
+        return predictions,  # 0 - negative ; 1 - neutral; 2 - positive
+
 
         # predictions = []
 
@@ -53,7 +55,6 @@ class DistillBERTSentimentClassifier(SentimentClassifierEncoder):
         #         preds = outputs.argmax(1)
         #         predictions.extend(preds)
 
-        return predictions,  # 0 - negative ; 1 - neutral; 2 - positive
         
 
     def predict_results(self, **kwargs):

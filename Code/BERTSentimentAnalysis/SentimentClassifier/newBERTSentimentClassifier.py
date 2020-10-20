@@ -31,13 +31,10 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
 
             input_ids = encoding['input_ids'].to(device=self.model.bert.device)
             attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
-            # try: 
             outputs = self.model(input_ids, attention_mask)
             preds = outputs.argmax(1)
 
             predictions.extend(preds)
-            # except Exception as e:
-                # print(e)
 
         return predictions # 0 - negative ; 1 - neutral; 2 - positive
 
