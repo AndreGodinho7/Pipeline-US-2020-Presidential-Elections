@@ -68,7 +68,7 @@ from multiprocessing import Process
 from queue import Queue
 
 
-NUM_WORKERS = 32
+NUM_WORKERS = 64
 NUM_THREADS = 1
 
 def create_kafka_config(jsonData):
