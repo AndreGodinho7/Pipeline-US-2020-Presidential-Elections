@@ -27,8 +27,8 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
         dataloader = DataLoader(messages, batch_size=batch_size)
 
         for batch in dataloader:
-            print(len(batch))
             encoding = self.tokenize(batch)
+            print(encoding)
 
             input_ids = encoding['input_ids'].to(device=self.model.bert.device)
             attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
