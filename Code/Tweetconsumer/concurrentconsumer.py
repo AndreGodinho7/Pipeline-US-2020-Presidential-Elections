@@ -202,14 +202,14 @@ def _process_batch(sentimentclassifier, q, c):
     
     print(str(threading.get_ident())+" ola2",flush=True)
     
-    print(round(time.process_time() - start, 2), flush=True)
-
+    # print(round(time.process_time() - start, 2), flush=True)
+    time.sleep(5)
     # BARRIER
     barrier.wait()
 
     # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
-    print(round(time.process_time() - start, 2), flush=True)
-    print(str(threading.get_ident())+" ola3",flush=True)
+    # print(round(time.process_time() - start, 2), flush=True)
+    print(str(threading.get_ident())+' '+str(time.process_time() - start)+" ola3",flush=True)
 
 
     # logging.info(
@@ -219,14 +219,14 @@ def _process_batch(sentimentclassifier, q, c):
 
     q.task_done()
 
-    try:
-        c.commit()
+    # try:
+    #     c.commit()
 
-    except Exception as e:
-        logging.critical(
-            'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
-            os.getpid(), threading.get_ident(), str(e)
-        ) 
+    # except Exception as e:
+    #     logging.critical(
+    #         'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
+    #         os.getpid(), threading.get_ident(), str(e)
+    #     ) 
 
 
 def _consume(config, model, model_path):
