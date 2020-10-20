@@ -167,14 +167,14 @@ def _init_sentiment_classifier(model_name, model_path):
         )
         logging.info(
             'CONSUME (init model):#%s - %s moved to the GPU: %s', 
-            os.getpid(), model, torch.cuda.get_device_name(0)
+            os.getpid(), model_name, torch.cuda.get_device_name(0)
         )
 
     else:
         sentimentclassifier.move_model_cpu()
         logging.info(
             'CONSUME (init model):#%s - %s moved to the CPU.', 
-            os.getpid(), model
+            os.getpid(), model_name
         )
     return sentimentclassifier
 
@@ -193,6 +193,7 @@ def _process_batch(sentimentclassifier, q, c):
     
     start = time.process_time()
     predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+    print(predictions)
     total_time = round(time.process_time() - start, 2)
 
     logging.info(
@@ -201,7 +202,7 @@ def _process_batch(sentimentclassifier, q, c):
     )
 
     q.task_done()
-
+    exit(0)
     try:
         c.commit()
 
@@ -230,7 +231,7 @@ def _consume(config, model, model_path):
         )
         try:
             records = c.consume(num_messages=MAX_POLL_RECORDS, 
-                            timeout=MAX_BLOCK_WAIT_TIME)
+                                timeout=MAX_BLOCK_WAIT_TIME)
 
             logging.info(
                 'CONSUME: #%s - Received %d records.',
