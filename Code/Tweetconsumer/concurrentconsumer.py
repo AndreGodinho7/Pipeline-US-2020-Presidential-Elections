@@ -64,18 +64,12 @@ torch.manual_seed(RANDOM_SEED)
 
 ######## WORKER CONFIGS ########
 import threading
-# threading.stack_size(5000000 * 1024)
 from multiprocessing import Process
 from queue import Queue
 
+
 NUM_WORKERS = 1
 NUM_THREADS = 1
-
-
-barrier = threading.Barrier(10)
-
-
-
 
 def create_kafka_config(jsonData):
     conf = {
@@ -186,47 +180,36 @@ def _init_sentiment_classifier(model_name, model_path):
 
 
 def _process_batch(sentimentclassifier, q, c):
-    batch = q.get()  # Set timeout to care for POSIX<3.0 and Windows. (timeout=60)
-
+    batch = q.get(timeout=60)  # Set timeout to care for POSIX<3.0 and Windows.
+    
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
         os.getpid(), threading.get_ident(), len(batch)
     )
-    print(str(threading.get_ident())+" ola0",flush=True)
+
     # batch needs to be in np.ndarray format for batches of dataloader
     batch = np.array(list(batch.values()))
-
-    print(str(threading.get_ident())+" ola1",flush=True)
-
+    
     start = time.process_time()
-    
-    print(str(threading.get_ident())+" ola2",flush=True)
-    
-    # print(round(time.process_time() - start, 2), flush=True)
-    time.sleep(5)
-    # BARRIER
-    barrier.wait()
+    predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+    total_time = round(time.process_time() - start, 2)
+    print(total_time, flush=True)
 
-    # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
-    # print(round(time.process_time() - start, 2), flush=True)
-    print(str(threading.get_ident())+' '+str(time.process_time() - start)+" ola3",flush=True)
-
-
-    # logging.info(
-    #     'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
-    #     os.getpid(), threading.get_ident(), total_time
-    # )
+    logging.info(
+        'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
+        os.getpid(), threading.get_ident(), total_time
+    )
 
     q.task_done()
 
-    # try:
-    #     c.commit()
+    try:
+        c.commit()
 
-    # except Exception as e:
-    #     logging.critical(
-    #         'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
-    #         os.getpid(), threading.get_ident(), str(e)
-    #     ) 
+    except Exception as e:
+        logging.critical(
+            'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
+            os.getpid(), threading.get_ident(), str(e)
+        ) 
 
 
 def _consume(config, model, model_path):
@@ -236,7 +219,7 @@ def _consume(config, model, model_path):
     )
     c = Consumer(**config['kafka_kwargs'])
     c.subscribe([config['topic']])
-    q = Queue(maxsize=config['num_threads'])
+    # q = Queue(maxsize=config['num_threads'])
 
     sentimentclassifier = _init_sentiment_classifier(model, model_path)
 
@@ -260,12 +243,36 @@ def _consume(config, model, model_path):
             # get batch of tweets in a dict {tweet ID: tweet text} (able to get long tweets)
             batch_records = batch_tweets_dict(records)
 
-            q.put(batch_records)
+            # batch needs to be in np.ndarray format for batches of dataloader
+            batch = np.array(list(batch.values()))
+            
+            start = time.process_time()
+            predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+            total_time = round(time.process_time() - start, 2)
+            print(total_time, flush=True)
 
-            # Use default daemon=False to stop threads gracefully in order to
-            # release resources properly.
-            t = threading.Thread(target=_process_batch, args=(sentimentclassifier, q, c))
-            t.start()
+            logging.info(
+                'CONSUME (process batch): #%s - classification time = %f',
+                os.getpid(), total_time
+            )
+
+            # q.task_done()
+
+            try:
+                c.commit()
+
+            except Exception as e:
+                logging.critical(
+                    'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
+                    os.getpid(), threading.get_ident(), str(e)
+                ) 
+
+            # q.put(batch_records)
+
+            # # Use default daemon=False to stop threads gracefully in order to
+            # # release resources properly.
+            # t = threading.Thread(target=_process_batch, args=(sentimentclassifier, q, c))
+            # t.start()
         
         except KeyboardInterrupt: 
             logging.warning(
@@ -287,8 +294,6 @@ def _consume(config, model, model_path):
 
 
 def main():
-    # threading.stack_size(50000000 * 1024)
-
     logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
     logging.getLogger().setLevel(logging.INFO)
     
@@ -330,5 +335,4 @@ def main():
 
 
 if __name__ == "__main__":
-    # threading.stack_size(50000000 * 1024)
     main()
