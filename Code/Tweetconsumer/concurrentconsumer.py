@@ -271,6 +271,8 @@ def _consume(config, model, model_path):
 
 
 def main():
+    threading.stack_size(5000000 * 1024)
+
     logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
     logging.getLogger().setLevel(logging.INFO)
     
