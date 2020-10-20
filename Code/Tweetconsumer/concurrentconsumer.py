@@ -192,8 +192,9 @@ def _process_batch(sentimentclassifier, q, c):
     # batch needs to be in np.ndarray format for batches of dataloader
     batch = np.array(list(batch.values()))
     
-    start = time.process_time()
     time.sleep(2)
+
+    start = time.process_time()
     predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
     print(predictions)
     total_time = round(time.process_time() - start, 2)
