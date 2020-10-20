@@ -188,20 +188,26 @@ def _process_batch(sentimentclassifier, q, c):
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
         os.getpid(), threading.get_ident(), len(batch)
     )
-    print("ola0")
+    print("ola0",flush=True)
     # batch needs to be in np.ndarray format for batches of dataloader
     batch = np.array(list(batch.values()))
-    print("ola1")
-    start = time.process_time()
-    print("ola2")
-    total_time = round(time.process_time() - start, 2)
-    time.sleep(4)
-    barrier.wait()
-    # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
-    total_time = round(time.process_time() - start, 2)
-    print("ola3")
 
-    print(total_time, flush=True)
+    print("ola1",flush=True)
+
+    start = time.process_time()
+    
+    print("ola2",flush=True)
+    
+    print(round(time.process_time() - start, 2), flush=True)
+    time.sleep(4)
+
+    # BARRIER
+    barrier.wait()
+
+    # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+    print(round(time.process_time() - start, 2), flush=True)
+    print("ola3",flush=True)
+
 
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
@@ -209,7 +215,7 @@ def _process_batch(sentimentclassifier, q, c):
     )
 
     q.task_done()
-    exit(0)
+
     try:
         c.commit()
 
