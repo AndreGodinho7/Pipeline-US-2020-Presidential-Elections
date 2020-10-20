@@ -181,7 +181,7 @@ def _init_sentiment_classifier(model_name, model_path):
 
 
 
-def _process_batch(sentimentclassifier, q, c):
+def _process_batch(q, c, model, model_path):
     batch = q.get(timeout=60)  # Set timeout to care for POSIX<3.0 and Windows.
     
     logging.info(
@@ -192,6 +192,7 @@ def _process_batch(sentimentclassifier, q, c):
     # batch needs to be in np.ndarray format for batches of dataloader
     batch = np.array(list(batch.values()))
     
+    sentimentclassifier = _init_sentiment_classifier(model, model_path)
 
     start = time.process_time()
     predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
@@ -224,7 +225,7 @@ def _consume(config, model, model_path):
     c.subscribe([config['topic']])
     q = Queue(maxsize=config['num_threads'])
 
-    sentimentclassifier = _init_sentiment_classifier(model, model_path)
+    # sentimentclassifier = _init_sentiment_classifier(model, model_path)
 
     while True:
         logging.info(
@@ -250,7 +251,7 @@ def _consume(config, model, model_path):
 
             # Use default daemon=False to stop threads gracefully in order to
             # release resources properly.
-            t = threading.Thread(target=_process_batch, args=(sentimentclassifier, q, c))
+            t = threading.Thread(target=_process_batch, args=(q, c, model, model_path))
             t.start()
         
         except KeyboardInterrupt: 
