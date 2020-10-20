@@ -24,7 +24,7 @@ AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
 ## maximum number of messages to return
-MAX_POLL_RECORDS = 16 # TODO: how many records to poll?
+MAX_POLL_RECORDS = 100 # TODO: how many records to poll?
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
@@ -187,14 +187,18 @@ def _process_batch(sentimentclassifier, q, c):
         'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
         os.getpid(), threading.get_ident(), len(batch)
     )
-
+    print("ola0")
     # batch needs to be in np.ndarray format for batches of dataloader
     batch = np.array(list(batch.values()))
-    
+    print("ola1")
     start = time.process_time()
+    print("ola2")
+
     # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
     time.sleep(4)
     total_time = round(time.process_time() - start, 2)
+    print("ola3")
+
     print(total_time, flush=True)
 
     logging.info(
