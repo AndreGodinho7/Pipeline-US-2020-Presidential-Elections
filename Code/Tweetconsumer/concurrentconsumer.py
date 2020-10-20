@@ -24,7 +24,7 @@ AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
 ## maximum number of messages to return
-MAX_POLL_RECORDS = 1000 # TODO: how many records to poll?
+MAX_POLL_RECORDS = 500 # TODO: how many records to poll?
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
