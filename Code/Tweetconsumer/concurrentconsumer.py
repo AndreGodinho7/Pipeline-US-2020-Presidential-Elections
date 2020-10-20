@@ -24,7 +24,7 @@ AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
 ## maximum number of messages to return
-MAX_POLL_RECORDS = 100 # TODO: how many records to poll?
+MAX_POLL_RECORDS = 16 # TODO: how many records to poll?
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
@@ -64,7 +64,7 @@ torch.manual_seed(RANDOM_SEED)
 
 ######## WORKER CONFIGS ########
 import threading
-threading.stack_size(5000000 * 1024)
+# threading.stack_size(5000000 * 1024)
 from multiprocessing import Process
 from queue import Queue
 
@@ -192,7 +192,8 @@ def _process_batch(sentimentclassifier, q, c):
     batch = np.array(list(batch.values()))
     
     start = time.process_time()
-    predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+    # predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+    time.sleep(4)
     total_time = round(time.process_time() - start, 2)
     print(total_time, flush=True)
 
@@ -271,7 +272,7 @@ def _consume(config, model, model_path):
 
 
 def main():
-    threading.stack_size(50000000 * 1024)
+    # threading.stack_size(50000000 * 1024)
 
     logging.basicConfig(format=LOGGING_FORMAT, datefmt='%Y-%m-%d %H:%M:%S')
     logging.getLogger().setLevel(logging.INFO)
@@ -314,5 +315,5 @@ def main():
 
 
 if __name__ == "__main__":
-    threading.stack_size(50000000 * 1024)
+    # threading.stack_size(50000000 * 1024)
     main()
