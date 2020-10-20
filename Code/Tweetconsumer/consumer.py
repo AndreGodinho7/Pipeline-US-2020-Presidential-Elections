@@ -188,10 +188,10 @@ def main():
                     kafkaConsumer.commit()
                     logging.info("Offsets have been committed.")
 
-            exit(0)
-
             except Exception as e:
                 logging.critical('Thown exception when committing offsets '+str(e))
+
+            exit(0)
 
         except KeyboardInterrupt: 
             logging.warning('Python program is closing. Closing Kafka consumer gracefully...')
