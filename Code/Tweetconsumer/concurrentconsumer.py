@@ -337,6 +337,7 @@ def main():
         for _ in range(config['num_workers']-num_alive):
             p = Process(target=_consume, daemon=True, args=(config, model, model_path))
             p.start()
+            time.sleep(1)
             workers.append(p)
             logging.info(
                 'MAIN: Starting worker #%s', 
