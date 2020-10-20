@@ -68,7 +68,7 @@ from multiprocessing import Process
 from queue import Queue
 
 
-NUM_WORKERS = 1
+NUM_WORKERS = 2
 NUM_THREADS = 1
 
 def create_kafka_config(jsonData):
@@ -243,13 +243,11 @@ def _consume(config, model, model_path):
             # get batch of tweets in a dict {tweet ID: tweet text} (able to get long tweets)
             batch_records = batch_tweets_dict(records)
 
-            # batch needs to be in np.ndarray format for batches of dataloader
-            batch = np.array(list(batch.values()))
             
+            # batch needs to be in np.ndarray format for batches of dataloader
             start = time.process_time()
-            predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
+            predictions = sentimentclassifier.predict(np.array(list(batch_records.values())), BATCH_SIZE)
             total_time = round(time.process_time() - start, 2)
-            print(total_time, flush=True)
 
             logging.info(
                 'CONSUME (process batch): #%s - classification time = %f',
