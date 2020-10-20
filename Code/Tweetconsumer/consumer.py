@@ -151,6 +151,9 @@ def main():
     # poll for new data
     while(True):
         try: 
+            kafkaConsumer = create_kafka_consumer(configurations)
+            logging.info("Created Kafka Consumer.")
+
             records = kafkaConsumer.consume(num_messages=MAX_POLL_RECORDS, 
                                             timeout=MAX_BLOCK_WAIT_TIME)
             
