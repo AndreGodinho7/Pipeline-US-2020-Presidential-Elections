@@ -35,7 +35,6 @@ MAX_POLL_INTERVAL_MS = POLL_INTERVAL_MIN*60*1000 # TODO: how many milliseconds t
 
 
 
-
 ######## MODEL CONFIGS ########
 import numpy as np
 import torch
@@ -65,7 +64,7 @@ torch.manual_seed(RANDOM_SEED)
 
 ######## WORKER CONFIGS ########
 import threading
-threading.stack_size(10000*1024*1024)
+threading.stack_size(500000 * 1024)
 from multiprocessing import Process
 from queue import Queue
 
@@ -196,14 +195,13 @@ def _process_batch(sentimentclassifier, q, c):
     predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
     total_time = round(time.process_time() - start, 2)
     print(total_time, flush=True)
-    print("ola")
 
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
         os.getpid(), threading.get_ident(), total_time
     )
 
-    # q.task_done()
+    q.task_done()
     exit(0)
     try:
         c.commit()
