@@ -17,6 +17,6 @@ class BERT(nn.Module):
             input_ids=input_ids, # indices of input sequence tokens in the vocabulary
             attention_mask=attention_mask # mask to avoid performing attention on padding token indices
         )
-
+        print(pooled_output)
         output = self.dropout(pooled_output)
         return self.out(output)
