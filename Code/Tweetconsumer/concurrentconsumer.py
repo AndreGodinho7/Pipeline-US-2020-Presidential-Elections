@@ -67,7 +67,7 @@ import threading
 from multiprocessing import Process, Barrier
 from queue import Queue
 
-NUM_WORKERS = 64
+NUM_WORKERS = 32
 NUM_THREADS = 1
 barrier = Barrier(NUM_WORKERS)
 
@@ -205,8 +205,6 @@ def _process_batch(sentimentclassifier, q, c):
     
     start = time.process_time()
     predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
-    total_time = round(time.process_time() - start, 2)
-    print(total_time, flush=True)
 
     logging.info(
         'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
