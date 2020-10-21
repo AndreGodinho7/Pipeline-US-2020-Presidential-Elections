@@ -255,6 +255,7 @@ def _consume(config, model, model_path):
             )
             
             if len(records) == 0:
+                time.sleep(1)
                 continue
             
             # get batch of tweets in a dict {tweet ID: tweet text} (able to get long tweets)
