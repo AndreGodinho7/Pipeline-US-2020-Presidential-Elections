@@ -67,9 +67,10 @@ import threading
 from multiprocessing import Process, Barrier
 from queue import Queue
 
-
 NUM_WORKERS = 4
 NUM_THREADS = 1
+barrier = Barrier(NUM_WORKERS)
+
 
 def create_kafka_config(jsonData):
     conf = {
@@ -330,7 +331,6 @@ def main():
     }
 
     workers = []
-    barrier = Barrier(NUM_WORKERS)
     while True:
         num_alive = len([w for w in workers if w.is_alive()])
 
