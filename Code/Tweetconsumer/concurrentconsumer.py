@@ -330,7 +330,7 @@ def main():
     }
 
     workers = []
-    barrier = multiprocessing.Barrier(NUM_WORKERS)
+    barrier = Barrier(NUM_WORKERS)
     while True:
         num_alive = len([w for w in workers if w.is_alive()])
 
