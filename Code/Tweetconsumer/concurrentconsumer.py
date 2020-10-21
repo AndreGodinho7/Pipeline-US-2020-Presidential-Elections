@@ -233,7 +233,10 @@ def _consume(config, model, model_path):
     c.subscribe([config['topic']])
     # q = Queue(maxsize=config['num_threads'])
 
+    start = time.process_time()
     sentimentclassifier = _init_sentiment_classifier(model, model_path)
+    total_time = round(time.process_time() - start, 2)
+    print(total_time)
 
     while True:
         logging.info(
