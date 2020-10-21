@@ -24,7 +24,7 @@ AUTO_OFFSET_RESET = 'earliest'
 ENABLE_AUTO_COMMIT = False
 
 ## maximum number of messages to return
-MAX_POLL_RECORDS = 500 # TODO: how many records to poll?
+MAX_POLL_RECORDS = 250 # TODO: how many records to poll?
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
@@ -67,7 +67,7 @@ import threading
 from multiprocessing import Process, Barrier
 from queue import Queue
 
-NUM_WORKERS = 4
+NUM_WORKERS = 8
 NUM_THREADS = 1
 barrier = Barrier(NUM_WORKERS)
 
