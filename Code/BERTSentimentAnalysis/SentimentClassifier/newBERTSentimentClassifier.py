@@ -22,35 +22,30 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
                               truncation=True,
                               return_tensors="pt")
 
-    def predict(self, messages: np.ndarray, batch_size):
+    def predict(self, dataloader: DataLoader):
+
         predictions = []
-        dataloader = DataLoader(messages, batch_size=batch_size)
+        ids = []
+
+        # for batch in dataloader:
+        #     encoding = self.tokenize(batch)
+
+        #     input_ids = encoding['input_ids'].to(device=self.model.bert.device)
+        #     attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
+        #     outputs = self.model(input_ids, attention_mask)
+        #     preds = outputs.argmax(1)
+
+        #     predictions.extend(preds)
 
         for batch in dataloader:
-            encoding = self.tokenize(batch)
+            encoding = self.tokenize(batch['tweets'])
+            input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
+            attention_mask = encoding['attention_mask'].to(device=self.model.distillbert.device)
 
-            input_ids = encoding['input_ids'].to(device=self.model.bert.device)
-            attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
             outputs = self.model(input_ids, attention_mask)
-            preds = outputs.argmax(1)
 
-            predictions.extend(preds)
+            preds = outputs.argmax(1) # 0 - negative ; 1 - neutral; 2 - positive
+            predictions.extend(preds.int().tolist())
+            ids.extend(batch['ids'])
 
-        return predictions # 0 - negative ; 1 - neutral; 2 - positive
-
-
-
-        # self.model.eval()
-        # with torch.no_grad():
-        #     for batch in dataloader:
-        #         input_ids = batch['input_ids'].to(self.model.bert.device)
-        #         attention_mask = batch['attention_mask'].to(self.model.bert.device)
-
-        #         outputs = self.model(input_ids, attention_mask).numpy()
-
-        #         preds = outputs.argmax(1)
-        #         predictions.extend(preds)
-
-        
-
-    
+        return ids, predictions  
