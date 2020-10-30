@@ -406,7 +406,7 @@ def _consume(config, model, model_path):
                 # gc.collect()
 
                 ids, predictions = sentimentclassifier.predict(tweets_dataloader)
-
+                print(ids)
                 for id, sentiment in zip(ids, predictions):
                     candidate_tweets[id]['sentiment'] = sentiment
 
