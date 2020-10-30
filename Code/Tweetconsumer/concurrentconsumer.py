@@ -235,22 +235,20 @@ def batch_tweets_dict(records):
     }
 
 def bulk_tweets(index, candidate_tweets):
-    for tweet_info in candidate_tweets:
-        id = next(iter(tweet_info))
-
+    for tweet_id, tweet_info in candidate_tweets.items():
         yield {
             "_index": '2020elections-'+index,
-            "_id": id,
-            "@timestamp": tweet_info.get(id).get("tweet_created_at"),
-            "sentiment": tweet_info.get(id).get("sentiment"),
-            "tweet": tweet_info.get(id).get("tweet"),
-            "user_id": tweet_info.get(id).get("user_id"),
-            "user_name": tweet_info.get(id).get("user_name"),
-            "user_location": tweet_info.get(id).get("user_location"),
-            "user_followers": tweet_info.get(id).get("user_followers"),
-            "user_friends": tweet_info.get(id).get("user_friends"),
-            "user_verified": tweet_info.get(id).get("user_verified"),
-            "user_created_at": tweet_info.get(id).get("user_created_at")
+            "_id": tweet_id,
+            "@timestamp": tweet_info.get("tweet_created_at"),
+            "sentiment": tweet_info.get("sentiment"),
+            "tweet": tweet_info.get("tweet"),
+            "user_id": tweet_info.get("user_id"),
+            "user_name": tweet_info.get("user_name"),
+            "user_location": tweet_info.get("user_location"),
+            "user_followers": tweet_info.get("user_followers"),
+            "user_friends": tweet_info.get("user_friends"),
+            "user_verified": tweet_info.get("user_verified"),
+            "user_created_at": tweet_info.get("user_created_at")
         }
 
 def _init_sentiment_classifier(model_name, model_path):
@@ -361,10 +359,6 @@ def _consume(config, model, model_path):
                     ids.append(key)
                     tweets.append(candidate_tweets[key].get('tweet'))
 
-                print(ids)
-                print("\n")
-                print(tweets)
-
                 tweets_dataset = TweetsDataset(ids, tweets)
                 tweets_dataloader = DataLoader(tweets_dataset, batch_size=BATCH_SIZE)
                 
@@ -372,11 +366,9 @@ def _consume(config, model, model_path):
                 # gc.collect()
 
                 ids, predictions = sentimentclassifier.predict(tweets_dataloader)
-                print(ids)
                 for id, sentiment in zip(ids, predictions):
                     candidate_tweets[id]['sentiment'] = sentiment
 
-                print(candidate_tweets)
 
                 # feed tweets to ElasticSearch
                 try:
