@@ -46,6 +46,6 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
 
             preds = outputs.argmax(1) # 0 - negative ; 1 - neutral; 2 - positive
             predictions.extend(preds.int().tolist())
-            ids.extend(batch['ids'].int().tolist())
+            ids.extend(batch['ids'])
 
         return ids, predictions  
