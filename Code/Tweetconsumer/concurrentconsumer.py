@@ -199,7 +199,8 @@ def batch_tweets_dict(records):
         
         flag_trump = False
         flag_biden = False
-        tweet = tweet_info[next(iter(tweet_info))].get('tweet')
+        tweet_id = next(iter(tweet_info))
+        tweet = tweet_info[tweet_id].get('tweet')
 
         if re.search('trump', tweet, re.IGNORECASE):
             flag_trump = True
@@ -207,8 +208,9 @@ def batch_tweets_dict(records):
         if re.search('biden', tweet, re.IGNORECASE):
             flag_biden = True
 
-        if flag_trump or flag_biden:
+        if flag_trump or flag_biden: # apply pre process of tweet if has trump or biden
             tweet = pre_process_tweet(tweet)
+            tweet_info[tweet_id]['tweet'] = tweet
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FINAL PRE-PROCESSED TWEET: %s\n" %(tweet))
         
         if flag_trump and flag_biden:
