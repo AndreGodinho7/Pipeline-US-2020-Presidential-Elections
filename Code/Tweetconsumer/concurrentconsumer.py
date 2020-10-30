@@ -119,7 +119,7 @@ def extract_tweet_info(record):
             else:
                 text = record_json['text']
 
-    tweet_id = record_json['id'] 
+    tweet_id = record_json['id_str'] 
     # date example Tue Oct 20 18:54:06 +0000 2020
     tweet_date = datetime.strptime(record_json['created_at'], '%a %b %d %H:%M:%S %z %Y').isoformat()
     user_id = record_json['user']['id']
@@ -318,38 +318,6 @@ def _init_sentiment_classifier(model_name, model_path):
             os.getpid(), model_name
         )
     return sentimentclassifier
-
-
-
-def _process_batch(sentimentclassifier, q, c):
-    batch = q.get(timeout=60)  # Set timeout to care for POSIX<3.0 and Windows.
-    
-    logging.info(
-        'CONSUME (process batch): #%s THREAD#%s - Received %d records.',
-        os.getpid(), threading.get_ident(), len(batch)
-    )
-
-    # batch needs to be in np.ndarray format for batches of dataloader
-    batch = np.array(list(batch.values()))
-    
-    start = time.process_time()
-    predictions = sentimentclassifier.predict(batch, BATCH_SIZE)
-
-    logging.info(
-        'CONSUME (process batch): #%s THREAD#%s - classification time = %f',
-        os.getpid(), threading.get_ident(), total_time
-    )
-
-    q.task_done()
-
-    try:
-        c.commit()
-
-    except Exception as e:
-        logging.error(
-            'CONSUME (process batch): #%s THREAD#%s - Exception when committing offsets: %s', 
-            os.getpid(), threading.get_ident(), str(e)
-        ) 
 
 
 def _consume(config, model, model_path):
