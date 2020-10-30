@@ -95,7 +95,6 @@ def create_kafka_config(jsonData):
 def extract_tweet_info(record):
     record_json = json.loads(record)
     record_json_keys = list(record_json.keys())
-    print("\n\n\n")
 
     # for key, value in record_json.items():
     #     print("key: %s | value: %s" %(key, value))
@@ -211,7 +210,6 @@ def batch_tweets_dict(records):
         if flag_trump or flag_biden: # apply pre process of tweet if has trump or biden
             tweet = pre_process_tweet(tweet)
             tweet_info[tweet_id]['tweet'] = tweet
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FINAL PRE-PROCESSED TWEET: %s\n" %(tweet))
         
         if flag_trump and flag_biden:
             trump_biden_tweets.update(tweet_info)
