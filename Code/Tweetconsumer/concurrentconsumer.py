@@ -97,8 +97,8 @@ def extract_tweet_info(record):
     record_json_keys = list(record_json.keys())
     print("\n\n\n")
 
-    for key, value in record_json.items():
-        print("key: %s | value: %s" %(key, value))
+    # for key, value in record_json.items():
+    #     print("key: %s | value: %s" %(key, value))
 
     if record_json['is_quote_status']: # quotes are usually against the user tweet message, do not use neither if it has a retweet
         if 'extended_tweet' in record_json_keys:
@@ -209,8 +209,7 @@ def batch_tweets_dict(records):
 
         if flag_trump or flag_biden:
             tweet = pre_process_tweet(tweet)
-
-        print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FINAL PRE-PROCESSED TWEET: %s\n" %(tweet))
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FINAL PRE-PROCESSED TWEET: %s\n" %(tweet))
         
         if flag_trump and flag_biden:
             trump_biden_tweets.append(tweet_info)
@@ -404,6 +403,8 @@ def _consume(config, model, model_path):
 
                 for id, sentiment in zip(ids, predictions):
                     candidate_tweets.get(id)['sentiment'] = sentiment
+
+                print(candidate_tweets)
 
                 # feed tweets to ElasticSearch
                 try:
