@@ -166,9 +166,9 @@ def pre_process_tweet(text):
     return text
 
 def batch_tweets_dict(records):
-    trump_tweets = []
-    biden_tweets = []
-    trump_biden_tweets = []
+    trump_tweets = {}
+    biden_tweets = {}
+    trump_biden_tweets = {}
 
     for record in records:
         if record.error():
@@ -214,13 +214,13 @@ def batch_tweets_dict(records):
             print(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> FINAL PRE-PROCESSED TWEET: %s\n" %(tweet))
         
         if flag_trump and flag_biden:
-            trump_biden_tweets.append(tweet_info)
+            trump_biden_tweets.update(tweet_info)
 
         elif flag_trump:
-            trump_tweets.append(tweet_info)
+            trump_tweets.update(tweet_info)
 
         elif flag_biden:
-            biden_tweets.append(tweet_info)
+            biden_tweets.update(tweet_info)
 
         else:
             continue
@@ -387,9 +387,13 @@ def _consume(config, model, model_path):
             batch_tweets = batch_tweets_dict(records)
             
             for index, candidate_tweets in batch_tweets.items():
-                ids = [next(iter(tweet)) for tweet in candidate_tweets]
-
-                tweets = [tweet[next(iter(tweet))].get('tweet') for tweet in candidate_tweets]
+                # ids = [next(iter(tweet)) for tweet in candidate_tweets]
+                # tweets = [tweet[next(iter(tweet))].get('tweet') for tweet in candidate_tweets]
+                ids = []
+                tweets = []
+                for key in candidate_tweets:
+                    ids.append(key)
+                    tweets.append(candidate_tweets[key].get('tweet'))
 
                 print(ids)
                 print("\n")
