@@ -279,7 +279,7 @@ def batch_tweets_dict(records):
 def bulk_tweets(index, candidate_tweets):
     for tweet_id, tweet_info in candidate_tweets.items():
         yield {
-            "_index": '2020elections-'+index,
+            "_index": '2020elections-test-'+index,
             "_id": tweet_id,
             "@timestamp": tweet_info.get("tweet_created_at"),
             "sentiment": class_names[tweet_info.get("sentiment")],
