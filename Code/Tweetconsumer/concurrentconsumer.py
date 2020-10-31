@@ -224,7 +224,6 @@ def batch_tweets_dict(records):
             continue
         
         if record.value() is None:
-            print(record.value())
             continue
 
         try: 
