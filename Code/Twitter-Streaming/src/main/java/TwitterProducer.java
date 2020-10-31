@@ -73,7 +73,7 @@ public class TwitterProducer {
         logger.info("SETUP");
 
         // Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream
-        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000); // capacity of # messages
+        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(10000); // capacity of # messages
 
         // create a twitter client
         Client client = createTwitterClient(msgQueue);
