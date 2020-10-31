@@ -109,7 +109,7 @@ def extract_tweet_info(record):
         raise InvalidTweet
 
     if record_json['lang'] != "en":
-        raise(NotEnglishTweet(record_json['text']))
+        raise NotEnglishTweet
 
     tweet_id = record_json['id_str'] 
     # date example Tue Oct 20 18:54:06 +0000 2020
@@ -235,10 +235,10 @@ def batch_tweets_dict(records):
             )
             continue
 
-        except NotEnglishTweet as e:
+        except NotEnglishTweet:
             logging.info(
-            'CONSUME (batch_tweets_dict): #%s - Skipping not english tweet: %s\n', 
-            os.getpid(), str(e),
+            'CONSUME (batch_tweets_dict): #%s - Skipping not english tweet\n', 
+            os.getpid(),
             )
             continue
 
