@@ -283,7 +283,7 @@ def bulk_tweets(index, candidate_tweets):
             "_id": tweet_id,
             "@timestamp": tweet_info.get("tweet_created_at"),
             "sentiment": class_names[tweet_info.get("sentiment")],
-            # "tweet": tweet_info.get("tweet"),
+            "tweet": tweet_info.get("tweet"),
             "user_id": tweet_info.get("user_id"),
             "user_name": tweet_info.get("user_name"),
             "user_location": tweet_info.get("user_location"),
