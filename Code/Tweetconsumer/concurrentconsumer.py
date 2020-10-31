@@ -422,8 +422,6 @@ def _consume(config, model, model_path):
             batch_tweets = batch_tweets_dict(records)
             
             for index, candidate_tweets in batch_tweets.items():
-                # ids = [next(iter(tweet)) for tweet in candidate_tweets]
-                # tweets = [tweet[next(iter(tweet))].get('tweet') for tweet in candidate_tweets]
                 ids = []
                 tweets = []
                 for key in candidate_tweets:
@@ -434,7 +432,7 @@ def _consume(config, model, model_path):
                 tweets_dataloader = DataLoader(tweets_dataset, batch_size=BATCH_SIZE)
                 
                 # TODO: test GC
-                # gc.collect()
+                gc.collect()
 
                 ids, predictions = sentimentclassifier.predict(tweets_dataloader)
                 for id, sentiment in zip(ids, predictions):
