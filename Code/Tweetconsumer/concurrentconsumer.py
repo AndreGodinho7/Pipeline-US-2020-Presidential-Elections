@@ -1,5 +1,5 @@
 ######## EXCEPTIONS CONFIGS ########
-from .Exceptions import InvalidTweet
+from Exceptions import InvalidTweet
 
 
 
