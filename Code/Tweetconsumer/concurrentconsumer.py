@@ -278,20 +278,43 @@ def batch_tweets_dict(records):
 
 def bulk_tweets(index, candidate_tweets):
     for tweet_id, tweet_info in candidate_tweets.items():
-        yield {
-            "_index": '2020elections-test-'+index,
-            "_id": tweet_id,
-            "@timestamp": tweet_info.get("tweet_created_at"),
-            "sentiment": class_names[tweet_info.get("sentiment")],
-            "tweet": tweet_info.get("tweet"),
-            "user_id": tweet_info.get("user_id"),
-            "user_name": tweet_info.get("user_name"),
-            "user_location": tweet_info.get("user_location"),
-            "user_followers": tweet_info.get("user_followers"),
-            "user_friends": tweet_info.get("user_friends"),
-            "user_verified": tweet_info.get("user_verified"),
-            "user_created_at": tweet_info.get("user_created_at")
-        }
+        if 'retweet_user_name' in tweet_info.keys():
+            yield {
+                "_index": '2020elections-test-'+index,
+                "_id": tweet_id,
+                "@timestamp": tweet_info.get("tweet_created_at"),
+                "sentiment": class_names[tweet_info.get("sentiment")],
+                "tweet": tweet_info.get("tweet"),
+                "user_id": tweet_info.get("user_id"),
+                "user_name": tweet_info.get("user_name"),
+                "user_location": tweet_info.get("user_location"),
+                "user_followers": tweet_info.get("user_followers"),
+                "user_friends": tweet_info.get("user_friends"),
+                "user_verified": tweet_info.get("user_verified"),
+                "user_created_at": tweet_info.get("user_created_at"),
+                "retweet_user_name": tweet_info.get("retweet_user_name"), 
+                "retweet_user_location": tweet_info.get("retweet_user_location"), 
+                "retweet_user_followers": tweet_info.get("retweet_user_followers"),
+                "retweet_user_verified": tweet_info.get("retweet_user_verified"),
+                "retweet_user_created_at": tweet_info.get("retweet_user_created_at"),
+                "retweet_user_tweet_created_at": tweet_info.get("retweet_user_tweet_created_at")
+            }
+            
+        else:
+            yield {
+                "_index": '2020elections-test-'+index,
+                "_id": tweet_id,
+                "@timestamp": tweet_info.get("tweet_created_at"),
+                "sentiment": class_names[tweet_info.get("sentiment")],
+                "tweet": tweet_info.get("tweet"),
+                "user_id": tweet_info.get("user_id"),
+                "user_name": tweet_info.get("user_name"),
+                "user_location": tweet_info.get("user_location"),
+                "user_followers": tweet_info.get("user_followers"),
+                "user_friends": tweet_info.get("user_friends"),
+                "user_verified": tweet_info.get("user_verified"),
+                "user_created_at": tweet_info.get("user_created_at")
+            }
 
 def _init_sentiment_classifier(model_name, model_path):
     if model_name == 'bert':
