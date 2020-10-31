@@ -222,9 +222,13 @@ def batch_tweets_dict(records):
                 os.getpid(), record.error()
             )
             continue
+        
+        if record is None:
+            print(">>>>>>>>>>>>>>>>>>>>>>>>> RECORD WAS NONE")
+            continue
 
-        # convert bytes to str
         try: 
+            # convert bytes to str
             record_str = record.value().decode('utf-8') 
             tweet_info = extract_tweet_info(record_str)
 
