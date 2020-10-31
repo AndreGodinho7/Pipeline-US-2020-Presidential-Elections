@@ -70,7 +70,7 @@ public class TwitterProducer {
     }
 
     private void run() {
-        logger.info("SETUP");
+        logger.info("Starting Producer");
 
         // Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000); // capacity of # messages
@@ -107,12 +107,11 @@ public class TwitterProducer {
                 producer.send(record, new Callback() {
                     public void onCompletion(RecordMetadata recordMetadata, Exception e) {
                         // executes every time a record is sucessfully sent or an Exception is thrown
-                        if (e == null) {
-                            // record was sucessfully sent
-                            writeMetadataToLog(recordMetadata.topic(), recordMetadata.partition(),
-                                    recordMetadata.offset(), recordMetadata.timestamp());
-                        } else {
+                        if (e != null) {
                             logger.error("Error while producing", e);
+                            // record was sucessfully sent
+                            //writeMetadataToLog(recordMetadata.topic(), recordMetadata.partition(),
+                             //       recordMetadata.offset(), recordMetadata.timestamp());
                         }
                     }
                 });
@@ -120,9 +119,9 @@ public class TwitterProducer {
                 e.printStackTrace();
                 client.stop();
             }
-            if (msg != null){
-                logger.info("Reiced a new tweet: " + msg);
-            }
+            //if (msg != null){
+            //    logger.info("Reiced a new tweet: " + msg);
+            //}
         }
 
         logger.info("End of application.");
