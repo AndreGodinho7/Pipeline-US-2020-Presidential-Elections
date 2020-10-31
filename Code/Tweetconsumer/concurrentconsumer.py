@@ -224,8 +224,8 @@ def batch_tweets_dict(records):
             continue
 
         # convert bytes to str
-        record_str = record.value().decode('utf-8') 
         try: 
+            record_str = record.value().decode('utf-8') 
             tweet_info = extract_tweet_info(record_str)
 
         except InvalidTweet as e: 
