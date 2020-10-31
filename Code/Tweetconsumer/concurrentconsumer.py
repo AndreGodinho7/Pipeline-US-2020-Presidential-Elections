@@ -1,3 +1,9 @@
+######## EXCEPTIONS CONFIGS ########
+from .Exceptions import InvalidTweet
+
+
+
+
 ######## UTILS CONFIGS ########
 import json
 import time
@@ -18,11 +24,6 @@ import emoji
 ######## LOGGING CONFIGS ########
 import logging
 LOGGING_FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
-
-
-
-######## EXCEPTIONS CONFIGS ########
-from Exceptions import InvalidTweet
 
 
 
