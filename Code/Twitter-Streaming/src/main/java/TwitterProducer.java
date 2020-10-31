@@ -100,7 +100,7 @@ public class TwitterProducer {
             String msg = null;
             try {
                 msg = msgQueue.poll(3, TimeUnit.SECONDS);
-
+                System.out.println((msgQueue.remainingCapacity()));
                 ProducerRecord<String, String> record =
                         new ProducerRecord<String, String>(topic, null, msg);
 
