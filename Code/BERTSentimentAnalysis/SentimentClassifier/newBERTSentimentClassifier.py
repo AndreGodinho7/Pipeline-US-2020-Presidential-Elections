@@ -39,8 +39,8 @@ class BERTSentimentClassifier(SentimentClassifierEncoder):
 
         for batch in dataloader:
             encoding = self.tokenize(batch['tweets'])
-            input_ids = encoding['input_ids'].to(device=self.model.distillbert.device)
-            attention_mask = encoding['attention_mask'].to(device=self.model.distillbert.device)
+            input_ids = encoding['input_ids'].to(device=self.model.bert.device)
+            attention_mask = encoding['attention_mask'].to(device=self.model.bert.device)
 
             outputs = self.model(input_ids, attention_mask)
 
