@@ -73,7 +73,7 @@ public class TwitterProducer {
     private void run() {
         logger.info("SETUP");
         // Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream
-        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100000); // capacity of # messages
+        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000); // capacity of # messages
 
         // create a twitter client
         Client client = createTwitterClient(msgQueue);
@@ -99,7 +99,7 @@ public class TwitterProducer {
         while (!client.isDone()) {
             String msg = null;
             try {
-                msg = msgQueue.poll(1, TimeUnit.SECONDS);
+                msg = msgQueue.poll(10, TimeUnit.MILLISECONDS);
                 System.out.println((msgQueue.remainingCapacity()));
                 ProducerRecord<String, String> record =
                         new ProducerRecord<String, String>(topic, null, msg);
@@ -132,10 +132,7 @@ public class TwitterProducer {
         // Declare the host you want to connect to, the endpoint, and authentication (basic auth or oauth)
         Hosts hosebirdHosts = new HttpHosts(Constants.STREAM_HOST);
         StatusesFilterEndpoint hosebirdEndpoint = new StatusesFilterEndpoint();
-        // Optional: set up some followings and track terms
-        //  List<Long> followings = Lists.newArrayList(1234L, 566788L); people
         List<String> terms = Lists.newArrayList(termToSearch); // terms
-        // hosebirdEndpoint.followings(followings); people
         hosebirdEndpoint.trackTerms(terms); // terms
 
         // These secrets should be read from a config file
