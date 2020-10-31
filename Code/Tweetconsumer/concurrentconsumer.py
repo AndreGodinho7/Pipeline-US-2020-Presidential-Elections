@@ -12,9 +12,17 @@ import re
 from datetime import datetime
 import emoji
 
+
+
+
 ######## LOGGING CONFIGS ########
 import logging
 LOGGING_FORMAT = '%(asctime)-15s %(levelname)-8s %(message)s'
+
+
+
+######## EXCEPTIONS CONFIGS ########
+from .Exceptions import InvalidTweet
 
 
 
@@ -96,6 +104,9 @@ def extract_tweet_info(record):
     record_json = json.loads(record)
     record_json_keys = list(record_json.keys())
 
+    if 'id_str' not in record_json_keys:
+        raise InvalidTweet
+
     # for key, value in record_json.items():
     #     print("key: %s | value: %s" %(key, value))
 
@@ -122,7 +133,7 @@ def extract_tweet_info(record):
     tweet_id = record_json['id_str'] 
     # date example Tue Oct 20 18:54:06 +0000 2020
     tweet_date = datetime.strptime(record_json['created_at'], '%a %b %d %H:%M:%S %z %Y').isoformat()
-    user_id = record_json['user']['id']
+    user_id = record_json['user']['id_str']
     user_name = record_json['user']['screen_name']
     user_location = record_json['user']['location']
     user_followers = record_json['user']['followers_count']
@@ -182,10 +193,10 @@ def batch_tweets_dict(records):
         try: 
             tweet_info = extract_tweet_info(record_str)
 
-        except KeyError as e: 
+        except InvalidTweet as e: 
             logging.info(
-            'CONSUME (batch_tweets_dict): #%s - Skipping bad data: %s\n%s', 
-            os.getpid(), record_str, str(e)
+            'CONSUME (batch_tweets_dict): #%s - Skipping invalid tweet: %s\n', 
+            os.getpid(), record_str,
             )
             continue
 
@@ -240,8 +251,8 @@ def bulk_tweets(index, candidate_tweets):
             "_index": '2020elections-'+index,
             "_id": tweet_id,
             "@timestamp": tweet_info.get("tweet_created_at"),
-            "sentiment": tweet_info.get("sentiment"),
-            "tweet": tweet_info.get("tweet"),
+            "sentiment": class_names[tweet_info.get("sentiment")],
+            # "tweet": tweet_info.get("tweet"),
             "user_id": tweet_info.get("user_id"),
             "user_name": tweet_info.get("user_name"),
             "user_location": tweet_info.get("user_location"),
