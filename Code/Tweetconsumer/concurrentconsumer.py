@@ -236,10 +236,6 @@ def batch_tweets_dict(records):
             continue
 
         except NotEnglishTweet:
-            logging.info(
-            'CONSUME (batch_tweets_dict): #%s - Skipping not english tweet\n', 
-            os.getpid(),
-            )
             continue
 
         except json.decoder.JSONDecodeError: 
