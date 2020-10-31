@@ -223,7 +223,7 @@ def batch_tweets_dict(records):
             )
             continue
         
-        if record is None:
+        if record.value() is None:
             print(">>>>>>>>>>>>>>>>>>>>>>>>> RECORD WAS NONE")
             continue
 
