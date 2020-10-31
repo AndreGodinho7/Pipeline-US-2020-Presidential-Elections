@@ -70,7 +70,7 @@ public class TwitterProducer {
     }
 
     private void run() {
-        logger.info("Starting Producer");
+        logger.info("SETUP");
 
         // Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream
         BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(1000); // capacity of # messages
@@ -99,7 +99,7 @@ public class TwitterProducer {
         while (!client.isDone()) {
             String msg = null;
             try {
-                msg = msgQueue.poll(5, TimeUnit.SECONDS);
+                msg = msgQueue.poll(3, TimeUnit.SECONDS);
 
                 ProducerRecord<String, String> record =
                         new ProducerRecord<String, String>(topic, null, msg);
@@ -107,11 +107,12 @@ public class TwitterProducer {
                 producer.send(record, new Callback() {
                     public void onCompletion(RecordMetadata recordMetadata, Exception e) {
                         // executes every time a record is sucessfully sent or an Exception is thrown
-                        if (e != null) {
-                            logger.error("Error while producing", e);
+                        if (e == null) {
                             // record was sucessfully sent
                             //writeMetadataToLog(recordMetadata.topic(), recordMetadata.partition(),
                              //       recordMetadata.offset(), recordMetadata.timestamp());
+                        } else {
+                            logger.error("Error while producing", e);
                         }
                     }
                 });
@@ -119,9 +120,9 @@ public class TwitterProducer {
                 e.printStackTrace();
                 client.stop();
             }
-            //if (msg != null){
-            //    logger.info("Reiced a new tweet: " + msg);
-            //}
+            if (msg != null){
+                logger.info("Received a new tweet");
+            }
         }
 
         logger.info("End of application.");
@@ -167,7 +168,7 @@ public class TwitterProducer {
         // high throughput producer
         properties.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG, "snappy");
         properties.setProperty(ProducerConfig.LINGER_MS_CONFIG, "20");
-        properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, Integer.toString(32*1024)); // 32 KB batch size
+        properties.setProperty(ProducerConfig.BATCH_SIZE_CONFIG, Integer.toString(64*1024)); // 64 KB batch size
 
 
         KafkaProducer<String, String> producer = new KafkaProducer<String, String>(properties);
