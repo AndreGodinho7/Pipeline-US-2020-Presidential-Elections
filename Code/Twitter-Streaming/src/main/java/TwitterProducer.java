@@ -17,6 +17,7 @@ import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -71,9 +72,8 @@ public class TwitterProducer {
 
     private void run() {
         logger.info("SETUP");
-
         // Set up your blocking queues: Be sure to size these properly based on expected TPS of your stream
-        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(10000); // capacity of # messages
+        BlockingQueue<String> msgQueue = new LinkedBlockingQueue<String>(100000); // capacity of # messages
 
         // create a twitter client
         Client client = createTwitterClient(msgQueue);
@@ -99,7 +99,7 @@ public class TwitterProducer {
         while (!client.isDone()) {
             String msg = null;
             try {
-                msg = msgQueue.poll(3, TimeUnit.SECONDS);
+                msg = msgQueue.poll(1, TimeUnit.SECONDS);
                 System.out.println((msgQueue.remainingCapacity()));
                 ProducerRecord<String, String> record =
                         new ProducerRecord<String, String>(topic, null, msg);
