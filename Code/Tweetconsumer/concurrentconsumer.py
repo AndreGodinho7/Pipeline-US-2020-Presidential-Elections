@@ -229,20 +229,12 @@ def batch_tweets_dict(records):
             tweet_info = extract_tweet_info(record_str)
 
         except InvalidTweet as e: 
-            logging.info(
-            'CONSUME (batch_tweets_dict): #%s - Skipping invalid tweet: %s\n', 
-            os.getpid(), record_str,
-            )
             continue
 
         except NotEnglishTweet:
             continue
 
         except json.decoder.JSONDecodeError: 
-            logging.info(
-                'CONSUME (batch_tweets_dict): #%s - JSON Decode error (bad data): %s', 
-                os.getpid(), record_str
-            )            
             continue
         
         flag_trump = False
