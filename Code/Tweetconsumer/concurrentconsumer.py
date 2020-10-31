@@ -427,18 +427,18 @@ def _consume(config, model, model_path):
                         os.getpid(), str(e)
                     )
 
-            try:
-                c.commit()
-                logging.info(
-                    'CONSUME: #%s - Offsets have ben committed.',
-                    os.getpid()
-                )
+            # try:
+            #     c.commit()
+            #     logging.info(
+            #         'CONSUME: #%s - Offsets have ben committed.',
+            #         os.getpid()
+            #     )
 
-            except Exception as e:
-                logging.critical(
-                    'CONSUME: #%s - Exception when committing offsets: %s', 
-                    os.getpid(), str(e)
-                ) 
+            # except Exception as e:
+            #     logging.critical(
+            #         'CONSUME: #%s - Exception when committing offsets: %s', 
+            #         os.getpid(), str(e)
+            #     ) 
             
 
         except KeyboardInterrupt: 
