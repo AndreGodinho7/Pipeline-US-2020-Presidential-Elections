@@ -224,7 +224,7 @@ def batch_tweets_dict(records):
             continue
         
         if record.value() is None:
-            print(">>>>>>>>>>>>>>>>>>>>>>>>> RECORD WAS NONE")
+            print(record.value())
             continue
 
         try: 
@@ -428,7 +428,7 @@ def _consume(config, model, model_path):
                 tweets_dataloader = DataLoader(tweets_dataset, batch_size=BATCH_SIZE)
                 
                 # TODO: test GC
-                gc.collect()
+                # gc.collect()
 
                 ids, predictions = sentimentclassifier.predict(tweets_dataloader)
                 for id, sentiment in zip(ids, predictions):
