@@ -1,5 +1,5 @@
 ######## EXCEPTIONS CONFIGS ########
-from Exceptions import InvalidTweet
+from Exceptions import InvalidTweet, NotEnglishTweet
 
 
 
@@ -107,6 +107,9 @@ def extract_tweet_info(record):
 
     if 'id_str' not in record_json_keys:
         raise InvalidTweet
+
+    if record_json['lang'] != "en":
+        raise(NotEnglishTweet(record_json['text']))
 
     tweet_id = record_json['id_str'] 
     # date example Tue Oct 20 18:54:06 +0000 2020
@@ -232,6 +235,13 @@ def batch_tweets_dict(records):
             )
             continue
 
+        except NotEnglishTweet as e:
+            logging.info(
+            'CONSUME (batch_tweets_dict): #%s - Skipping not english tweet: %s\n', 
+            os.getpid(), str(e),
+            )
+            continue
+
         except json.decoder.JSONDecodeError: 
             logging.info(
                 'CONSUME (batch_tweets_dict): #%s - JSON Decode error (bad data): %s', 
@@ -299,7 +309,7 @@ def bulk_tweets(index, candidate_tweets):
                 "retweet_user_created_at": tweet_info.get("retweet_user_created_at"),
                 "retweet_user_tweet_created_at": tweet_info.get("retweet_user_tweet_created_at")
             }
-            
+
         else:
             yield {
                 "_index": '2020elections-test-'+index,
