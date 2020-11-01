@@ -305,7 +305,7 @@ def bulk_tweets(index, candidate_tweets):
 
         else:
             yield {
-                "_index": '2020elections-test-'+index,
+                "_index": '2020elections-'+index,
                 "_id": tweet_id,
                 "@timestamp": tweet_info.get("tweet_created_at"),
                 "sentiment": class_names[tweet_info.get("sentiment")],
