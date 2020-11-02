@@ -69,8 +69,8 @@ RANDOM_SEED = 10
 MAX_LEN = 512
 BATCH_SIZE = 16
 n_GPU = 0
-CLASSES = 3
-class_names = ['negative', 'neutral', 'positive']
+CLASSES = 2
+class_names = ['negative', 'positive']
 USE_GPU = False
 np.random.seed(RANDOM_SEED)
 torch.manual_seed(RANDOM_SEED)
