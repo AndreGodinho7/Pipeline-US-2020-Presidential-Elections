@@ -234,6 +234,8 @@ def batch_tweets_dict(records):
             tweet_info = extract_tweet_info(record_str)
 
         except InvalidTweet as e: 
+            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>invalid tweet")
+            print(record_str)
             continue
 
         except NotEnglishTweet:
