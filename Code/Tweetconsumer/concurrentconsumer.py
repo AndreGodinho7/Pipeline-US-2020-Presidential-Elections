@@ -226,6 +226,7 @@ def batch_tweets_dict(records):
             continue
         
         if record.value() is None:
+            print(">>>>> record is None")
             continue
 
         try: 
@@ -234,8 +235,6 @@ def batch_tweets_dict(records):
             tweet_info = extract_tweet_info(record_str)
 
         except InvalidTweet as e: 
-            print(">>>>>>>>>>>>>>>>>>>>>>>>>>>invalid tweet")
-            print(record_str)
             continue
 
         except NotEnglishTweet:
@@ -439,32 +438,32 @@ def _consume(config, model, model_path):
 
 
                 # feed tweets to ElasticSearch
-                try:
-                    # no memory allocation when sending bulk of tweets to ES
-                    response = helpers.bulk(es, bulk_tweets(index, candidate_tweets))
+                # try:
+                #     # no memory allocation when sending bulk of tweets to ES
+                #     response = helpers.bulk(es, bulk_tweets(index, candidate_tweets))
 
-                    logging.info(
-                        'CONSUME (to ElasticSearch): #%s - %s',
-                        os.getpid(), str(response)
-                    )
-                except Exception as e:
-                    logging.critical(
-                        'CONSUME (to ElasticSearch EXCEPTION): #%s - %s', 
-                        os.getpid(), str(e)
-                    )
+                #     logging.info(
+                #         'CONSUME (to ElasticSearch): #%s - %s',
+                #         os.getpid(), str(response)
+                #     )
+                # except Exception as e:
+                #     logging.critical(
+                #         'CONSUME (to ElasticSearch EXCEPTION): #%s - %s', 
+                #         os.getpid(), str(e)
+                #     )
 
-            try:
-                c.commit()
-                logging.info(
-                    'CONSUME: #%s - Offsets have ben committed.',
-                    os.getpid()
-                )
+            # try:
+            #     c.commit()
+            #     logging.info(
+            #         'CONSUME: #%s - Offsets have ben committed.',
+            #         os.getpid()
+            #     )
 
-            except Exception as e:
-                logging.critical(
-                    'CONSUME: #%s - Exception when committing offsets: %s', 
-                    os.getpid(), str(e)
-                ) 
+            # except Exception as e:
+            #     logging.critical(
+            #         'CONSUME: #%s - Exception when committing offsets: %s', 
+            #         os.getpid(), str(e)
+            #     ) 
             
 
         except KeyboardInterrupt: 
