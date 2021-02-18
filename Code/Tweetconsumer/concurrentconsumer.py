@@ -87,7 +87,7 @@ import threading
 from multiprocessing import Process, Barrier
 from queue import Queue
 
-NUM_WORKERS = 8
+NUM_WORKERS = 64
 NUM_THREADS = 1
 barrier = Barrier(NUM_WORKERS)
 
@@ -478,13 +478,12 @@ def _consume(config, model, model_path):
             'CONSUME: #%s - Worker is closing. Closing Kafka consumer gracefully...',
             os.getpid()
         )
-        topic_partition = c.assignment()
+        topic_partition = c.assignment()[0]
+        partition = topic_partition['partition']
 
         logging.info(topic_partition)
 
-        logging.warning(
-            "topic, partitions %s \n" %("".join(str(topic_partition)))
-        )
+        logging.info(partition)
 
         with open('partition_'+str(os.getpid())+'.txt', "w") as output:
             logging.info("Writing output file")
