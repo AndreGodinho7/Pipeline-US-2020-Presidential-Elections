@@ -432,8 +432,8 @@ def _consume(config, model, model_path):
                 # gc.collect()
 
                 ids, predictions = sentimentclassifier.predict(tweets_dataloader)
-                for id, sentiment in zip(ids, predictions):
-                    candidate_tweets[id]['sentiment'] = sentiment
+          #      for id, sentiment in zip(ids, predictions):
+          #          candidate_tweets[id]['sentiment'] = sentiment
 
 
                 # feed tweets to ElasticSearch
