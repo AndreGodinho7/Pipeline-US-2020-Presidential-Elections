@@ -227,7 +227,6 @@ def batch_tweets_dict(records):
             continue
         
         if record.value() is None:
-            count += 1
             continue
 
         try: 
@@ -236,15 +235,12 @@ def batch_tweets_dict(records):
             tweet_info = extract_tweet_info(record_str)
 
         except InvalidTweet as e: 
-            count += 1
             continue
 
         except NotEnglishTweet:
-            count += 1
             continue
 
         except json.decoder.JSONDecodeError: 
-            count += 1
             continue
         
         flag_trump = False
@@ -252,11 +248,11 @@ def batch_tweets_dict(records):
         tweet_id = next(iter(tweet_info))
         tweet = tweet_info[tweet_id].get('tweet')
 
-        # if re.search('trump', tweet, re.IGNORECASE):
-        flag_trump = True
+        if re.search('trump', tweet, re.IGNORECASE):
+            flag_trump = True
 
-        # if re.search('biden', tweet, re.IGNORECASE):
-        flag_biden = True
+        if re.search('biden', tweet, re.IGNORECASE):
+            flag_biden = True
 
         if flag_trump or flag_biden: # apply pre process of tweet if has trump or biden
             tweet = pre_process_tweet(tweet)
@@ -272,8 +268,9 @@ def batch_tweets_dict(records):
             biden_tweets.update(tweet_info)
 
         else:
-            count += 1
             continue
+    
+    count = len(trump_tweets) + len(biden_tweets)
     logging.info(
         'CONSUME (batch_tweets_dict): #%s - Found - Trump tweets: %d; Biden tweets: %d; Trump & Biden tweets: %d',
          os.getpid(), len(trump_tweets), len(biden_tweets), len(trump_biden_tweets)
