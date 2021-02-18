@@ -446,9 +446,7 @@ def _consume(config, model, model_path):
             for info in topic_partition_lst:
                 partitions.append(str(info.partition))
 
-            logging.info(partitions)
             parts = '_'.join(partitions)
-            logging.info(parts)
             with open('./output'+str(NUM_WORKERS)+'/partitions_'+parts+'.txt', "w") as output:
                 output.write("%s" %(str(total_count)))
                 logging.info("Output file created")
