@@ -478,13 +478,18 @@ def _consume(config, model, model_path):
             'CONSUME: #%s - Worker is closing. Closing Kafka consumer gracefully...',
             os.getpid()
         )
-        topic_partition = c.assignment()[0]
-        logging.info(topic_partition)
-        partition = topic_partition.partition
-        logging.info(partition)
 
-        with open('./output/partition_'+str(partition)+'.txt', "w") as output:
-            output.write("%s,%s" %(str(partition), str(total_count)))
+        partitions = []
+
+        topic_partition_lst = c.assignment()
+
+        for part in topic_partition_lst:
+            partitions.append(topic_partition.partition)
+
+        parts = '_'.join(partitions)
+
+        with open('./output/partitions_'+parts+'.txt', "w") as output:
+            output.write("%s" %(str(total_count)))
             logging.info("Output file created")
 
         c.close()
