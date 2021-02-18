@@ -503,6 +503,7 @@ def _consume(config, model, model_path):
         logging.critical(
             'CONSUME: #%s - KAFKA CRITICAL ERROR: %s', 
             os.getpid(), str(e)
+        )
         
 
 
