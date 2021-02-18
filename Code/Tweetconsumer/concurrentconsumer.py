@@ -87,7 +87,7 @@ import threading
 from multiprocessing import Process, Barrier
 from queue import Queue
 
-NUM_WORKERS = 64
+NUM_WORKERS = 32
 NUM_THREADS = 1
 barrier = Barrier(NUM_WORKERS)
 
