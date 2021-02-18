@@ -426,20 +426,6 @@ def _consume(config, model, model_path):
                         os.getpid()
                     )
 
-                    partitions = []
-
-                    topic_partition_lst = c.assignment()
-
-                    for info in topic_partition_lst:
-                        partitions.append(str(info.partition))
-
-                    logging.info(partitions)
-                    parts = '_'.join(partitions)
-                    logging.info(parts)
-                    with open('./output'+str(NUM_WORKERS)+'/partitions_'+parts+'.txt', "w") as output:
-                        output.write("%s" %(str(total_count)))
-                        logging.info("Output file created")
-
                     c.close()
                     logging.warning(
                         'CONSUME: #%s - Kafka consumer closed gracefully.',
@@ -452,6 +438,20 @@ def _consume(config, model, model_path):
             # get batch of tweets (dict of tweets for trump, biden and both)
             batch_tweets, count = batch_tweets_dict(records)
             total_count += count
+
+            partitions = []
+
+            topic_partition_lst = c.assignment()
+
+            for info in topic_partition_lst:
+                partitions.append(str(info.partition))
+
+            logging.info(partitions)
+            parts = '_'.join(partitions)
+            logging.info(parts)
+            with open('./output'+str(NUM_WORKERS)+'/partitions_'+parts+'.txt', "w") as output:
+                output.write("%s" %(str(total_count)))
+                logging.info("Output file created")
 
             for index, candidate_tweets in batch_tweets.items():
                 ids = []
@@ -504,20 +504,6 @@ def _consume(config, model, model_path):
             'CONSUME: #%s - Worker is closing. Closing Kafka consumer gracefully...',
             os.getpid()
         )
-
-        partitions = []
-
-        topic_partition_lst = c.assignment()
-
-        for info in topic_partition_lst:
-            partitions.append(str(info.partition))
-
-        logging.info(partitions)
-        parts = '_'.join(partitions)
-        logging.info(parts)
-        with open('./output'+str(NUM_WORKERS)+'/partitions_'+parts+'.txt', "w") as output:
-            output.write("%s" %(str(total_count)))
-            logging.info("Output file created")
 
         c.close()
         logging.warning(
