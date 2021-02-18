@@ -461,7 +461,7 @@ def _consume(config, model, model_path):
                 #     )
 
             try:
-                # c.commit()
+                c.commit()
                 logging.info(
                     'CONSUME: #%s - Offsets have ben committed.',
                     os.getpid()
