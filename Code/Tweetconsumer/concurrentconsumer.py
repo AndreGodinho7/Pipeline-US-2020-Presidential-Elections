@@ -270,7 +270,7 @@ def batch_tweets_dict(records):
         else:
             continue
     
-    count = len(trump_tweets) + len(biden_tweets)
+    count = len(trump_tweets) + len(biden_tweets) + len(trump_biden_tweets)
     logging.info(
         'CONSUME (batch_tweets_dict): #%s - Found - Trump tweets: %d; Biden tweets: %d; Trump & Biden tweets: %d',
          os.getpid(), len(trump_tweets), len(biden_tweets), len(trump_biden_tweets)
