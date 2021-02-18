@@ -480,11 +480,14 @@ def _consume(config, model, model_path):
                 os.getpid()
             )
             topic_partition = c.assignment()
+            logging.warning(
+                "topic, partitions %s \n" %("".join(str(topic_partition)))
+            )
 
             with open('partition_'+str(os.getpid())+'.txt', "w") as output:
-                print("Writing output file")
+                logging.info("Writing output file")
                 output.write("TOPIC, PARTITIONS %s \n" %("".join(str(topic_partition))))
-                print("Output file created")
+                logging.info("Output file created")
 
             c.close()
             logging.warning(
