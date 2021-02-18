@@ -461,7 +461,7 @@ def _consume(config, model, model_path):
                 #     )
 
             try:
-                c.commit()
+                # c.commit()
                 logging.info(
                     'CONSUME: #%s - Offsets have ben committed.',
                     os.getpid()
@@ -479,10 +479,8 @@ def _consume(config, model, model_path):
             os.getpid()
         )
         topic_partition = c.assignment()[0]
-        partition = topic_partition['partition']
-
         logging.info(topic_partition)
-
+        partition = topic_partition['partition']
         logging.info(partition)
 
         with open('partition_'+str(os.getpid())+'.txt', "w") as output:
