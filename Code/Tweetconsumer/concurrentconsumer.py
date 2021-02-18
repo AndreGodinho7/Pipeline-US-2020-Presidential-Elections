@@ -471,67 +471,7 @@ def _consume(config, model, model_path):
                 logging.critical(
                     'CONSUME: #%s - Exception when committing offsets: %s', 
                     os.getpid(), str(e)
-                ) records = c.consume(num_messages=MAX_POLL_RECORDS, 
-                                timeout=MAX_BLOCK_WAIT_TIME)
-
-            logging.info(
-                'CONSUME: #%s - Received %d records.',
-                os.getpid(), len(records)
-            )
-            
-            if len(records) == 0:
-                time.sleep(2)
-                continue
-            
-            # get batch of tweets (dict of tweets for trump, biden and both)
-            batch_tweets, count = batch_tweets_dict(records)
-            total_count += count
-
-            for index, candidate_tweets in batch_tweets.items():
-                ids = []
-                tweets = []
-                for key in candidate_tweets:
-                    ids.append(key)
-                    tweets.append(candidate_tweets[key].get('tweet'))
-
-                tweets_dataset = TweetsDataset(ids, tweets)
-                tweets_dataloader = DataLoader(tweets_dataset, batch_size=BATCH_SIZE)
-                
-                # TODO: test GC
-                # gc.collect()
-
-                ids, predictions = sentimentclassifier.predict(tweets_dataloader)
-            #      for id, sentiment in zip(ids, predictions):
-            #          candidate_tweets[id]['sentiment'] = sentiment
-
-
-                # feed tweets to ElasticSearch
-                # try:
-                #     # no memory allocation when sending bulk of tweets to ES
-                #     response = helpers.bulk(es, bulk_tweets(index, candidate_tweets))
-
-                #     logging.info(
-                #         'CONSUME (to ElasticSearch): #%s - %s',
-                #         os.getpid(), str(response)
-                #     )
-                # except Exception as e:
-                #     logging.critical(
-                #         'CONSUME (to ElasticSearch EXCEPTION): #%s - %s', 
-                #         os.getpid(), str(e)
-                #     )
-
-            try:
-                c.commit()
-                logging.info(
-                    'CONSUME: #%s - Offsets have ben committed.',
-                    os.getpid()
-                )
-
-            except Exception as e:
-                logging.critical(
-                    'CONSUME: #%s - Exception when committing offsets: %s', 
-                    os.getpid(), str(e)
-                )  
+                ) 
 
     except KeyboardInterrupt: 
         logging.warning(
