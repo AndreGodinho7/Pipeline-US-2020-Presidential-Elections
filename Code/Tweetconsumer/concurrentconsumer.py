@@ -480,7 +480,7 @@ def _consume(config, model, model_path):
         )
         topic_partition = c.assignment()[0]
         logging.info(topic_partition)
-        partition = topic_partition['partition']
+        partition = topic_partition.partition
         logging.info(partition)
 
         with open('partition_'+str(os.getpid())+'.txt', "w") as output:
