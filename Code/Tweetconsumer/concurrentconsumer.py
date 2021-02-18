@@ -483,8 +483,8 @@ def _consume(config, model, model_path):
 
         topic_partition_lst = c.assignment()
 
-        for part in topic_partition_lst:
-            partitions.append(topic_partition.partition)
+        for info in topic_partition_lst:
+            partitions.append(info.partition)
 
         parts = '_'.join(partitions)
 
