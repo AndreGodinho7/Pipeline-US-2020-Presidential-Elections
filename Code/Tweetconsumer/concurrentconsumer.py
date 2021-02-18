@@ -252,11 +252,11 @@ def batch_tweets_dict(records):
         tweet_id = next(iter(tweet_info))
         tweet = tweet_info[tweet_id].get('tweet')
 
-        if re.search('trump', tweet, re.IGNORECASE):
-            flag_trump = True
+        # if re.search('trump', tweet, re.IGNORECASE):
+        flag_trump = True
 
-        if re.search('biden', tweet, re.IGNORECASE):
-            flag_biden = True
+        # if re.search('biden', tweet, re.IGNORECASE):
+        flag_biden = True
 
         if flag_trump or flag_biden: # apply pre process of tweet if has trump or biden
             tweet = pre_process_tweet(tweet)
@@ -420,8 +420,37 @@ def _consume(config, model, model_path):
             )
             
             if len(records) == 0:
-                time.sleep(2)
-                continue
+                try: 
+                    time.sleep(2)
+                    continue
+                except KeyboardInterrupt: 
+                    logging.warning(
+                        'CONSUME: #%s - Worker is closing. Closing Kafka consumer gracefully...',
+                        os.getpid()
+                    )
+
+                    partitions = []
+
+                    topic_partition_lst = c.assignment()
+
+                    for info in topic_partition_lst:
+                        partitions.append(str(info.partition))
+
+                    logging.info(partitions)
+                    parts = '_'.join(partitions)
+                    logging.info(parts)
+                    with open('./output'+str(NUM_WORKERS)+'/partitions_'+parts+'.txt', "w") as output:
+                        output.write("%s" %(str(total_count)))
+                        logging.info("Output file created")
+
+                    c.close()
+                    logging.warning(
+                        'CONSUME: #%s - Kafka consumer closed gracefully.',
+                        os.getpid()
+                    )
+
+                    sys.exit(0)
+                
             
             # get batch of tweets (dict of tweets for trump, biden and both)
             batch_tweets, count = batch_tweets_dict(records)
