@@ -404,13 +404,13 @@ def _consume(config, model, model_path):
     barrier.wait()
 
     total_count = 0
-
-    while True:
-        logging.info(
-            'CONSUME: #%s - Waiting for message...', 
-            os.getpid()
-        )
-        try:
+    try:
+        while True:
+            logging.info(
+                'CONSUME: #%s - Waiting for message...', 
+                os.getpid()
+            )
+            
             records = c.consume(num_messages=MAX_POLL_RECORDS, 
                                 timeout=MAX_BLOCK_WAIT_TIME)
 
@@ -441,8 +441,8 @@ def _consume(config, model, model_path):
                 # gc.collect()
 
                 ids, predictions = sentimentclassifier.predict(tweets_dataloader)
-          #      for id, sentiment in zip(ids, predictions):
-          #          candidate_tweets[id]['sentiment'] = sentiment
+            #      for id, sentiment in zip(ids, predictions):
+            #          candidate_tweets[id]['sentiment'] = sentiment
 
 
                 # feed tweets to ElasticSearch
@@ -471,37 +471,99 @@ def _consume(config, model, model_path):
                 logging.critical(
                     'CONSUME: #%s - Exception when committing offsets: %s', 
                     os.getpid(), str(e)
-                ) 
+                ) records = c.consume(num_messages=MAX_POLL_RECORDS, 
+                                timeout=MAX_BLOCK_WAIT_TIME)
+
+            logging.info(
+                'CONSUME: #%s - Received %d records.',
+                os.getpid(), len(records)
+            )
             
+            if len(records) == 0:
+                time.sleep(2)
+                continue
+            
+            # get batch of tweets (dict of tweets for trump, biden and both)
+            batch_tweets, count = batch_tweets_dict(records)
+            total_count += count
 
-        except KeyboardInterrupt: 
-            logging.warning(
-                'CONSUME: #%s - Worker is closing. Closing Kafka consumer gracefully...',
-                os.getpid()
-            )
-            topic_partition = c.assignment()
-            logging.warning(
-                "topic, partitions %s \n" %("".join(str(topic_partition)))
-            )
+            for index, candidate_tweets in batch_tweets.items():
+                ids = []
+                tweets = []
+                for key in candidate_tweets:
+                    ids.append(key)
+                    tweets.append(candidate_tweets[key].get('tweet'))
 
-            with open('partition_'+str(os.getpid())+'.txt', "w") as output:
-                logging.info("Writing output file")
-                output.write("TOPIC, PARTITIONS %s \n" %("".join(str(topic_partition))))
-                logging.info("Output file created")
+                tweets_dataset = TweetsDataset(ids, tweets)
+                tweets_dataloader = DataLoader(tweets_dataset, batch_size=BATCH_SIZE)
+                
+                # TODO: test GC
+                # gc.collect()
 
-            c.close()
-            logging.warning(
-                'CONSUME: #%s - Kafka consumer closed gracefully.',
-                os.getpid()
-            )
+                ids, predictions = sentimentclassifier.predict(tweets_dataloader)
+            #      for id, sentiment in zip(ids, predictions):
+            #          candidate_tweets[id]['sentiment'] = sentiment
 
-            sys.exit(0)
 
-        except KafkaError as e: 
-            logging.critical(
-                'CONSUME: #%s - KAFKA CRITICAL ERROR: %s', 
-                os.getpid(), str(e)
-            )
+                # feed tweets to ElasticSearch
+                # try:
+                #     # no memory allocation when sending bulk of tweets to ES
+                #     response = helpers.bulk(es, bulk_tweets(index, candidate_tweets))
+
+                #     logging.info(
+                #         'CONSUME (to ElasticSearch): #%s - %s',
+                #         os.getpid(), str(response)
+                #     )
+                # except Exception as e:
+                #     logging.critical(
+                #         'CONSUME (to ElasticSearch EXCEPTION): #%s - %s', 
+                #         os.getpid(), str(e)
+                #     )
+
+            try:
+                c.commit()
+                logging.info(
+                    'CONSUME: #%s - Offsets have ben committed.',
+                    os.getpid()
+                )
+
+            except Exception as e:
+                logging.critical(
+                    'CONSUME: #%s - Exception when committing offsets: %s', 
+                    os.getpid(), str(e)
+                )  
+
+    except KeyboardInterrupt: 
+        logging.warning(
+            'CONSUME: #%s - Worker is closing. Closing Kafka consumer gracefully...',
+            os.getpid()
+        )
+        topic_partition = c.assignment()
+
+        logging.info(topic_partition)
+
+        logging.warning(
+            "topic, partitions %s \n" %("".join(str(topic_partition)))
+        )
+
+        with open('partition_'+str(os.getpid())+'.txt', "w") as output:
+            logging.info("Writing output file")
+            output.write("TOPIC, PARTITIONS %s \n" %("".join(str(topic_partition))))
+            logging.info("Output file created")
+
+        c.close()
+        logging.warning(
+            'CONSUME: #%s - Kafka consumer closed gracefully.',
+            os.getpid()
+        )
+
+        sys.exit(0)
+
+    except KafkaError as e: 
+        logging.critical(
+            'CONSUME: #%s - KAFKA CRITICAL ERROR: %s', 
+            os.getpid(), str(e)
+        
 
 
 def main():
