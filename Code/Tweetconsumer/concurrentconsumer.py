@@ -484,7 +484,7 @@ def _consume(config, model, model_path):
         topic_partition_lst = c.assignment()
 
         for info in topic_partition_lst:
-            partitions.append(info.partition)
+            partitions.append(str(info.partition))
 
         logging.info(partitions)
         parts = '_'.join(partitions)
