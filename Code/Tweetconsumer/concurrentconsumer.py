@@ -39,7 +39,7 @@ ENABLE_AUTO_COMMIT = False
 ## maximum number of messages to return
 # to avoid issues consumers are encouraged to
 # process data fast and poll often
-MAX_POLL_RECORDS = 250
+MAX_POLL_RECORDS = 1600
 
 ## maximum time to block waiting for message (in seconds)
 MAX_BLOCK_WAIT_TIME = 2
