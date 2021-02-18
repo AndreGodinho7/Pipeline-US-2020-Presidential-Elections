@@ -480,15 +480,15 @@ def _consume(config, model, model_path):
                 os.getpid()
             )
             c.close()
-            logging.warning(
-                'CONSUME: #%s - Kafka consumer closed gracefully.',
-                os.getpid()
-            )
-
             topic_partition = c.assignment()
 
             with open('partition_'+os.getpid()+'.txt', "w") as output:
                 output.write("TOPIC, PARTITIONS %s \n" %("".join(str(topic_partition))))
+
+            logging.warning(
+                'CONSUME: #%s - Kafka consumer closed gracefully.',
+                os.getpid()
+            )
 
             sys.exit(0)
 
