@@ -488,7 +488,7 @@ def _consume(config, model, model_path):
 
         parts = '_'.join(partitions)
 
-        with open('./output/partitions_'+parts+'.txt', "w") as output:
+        with open('./output'+str(NUM_WORKERS)+'/partitions_'+parts+'.txt', "w") as output:
             output.write("%s" %(str(total_count)))
             logging.info("Output file created")
 
