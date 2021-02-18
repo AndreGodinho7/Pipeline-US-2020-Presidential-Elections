@@ -216,6 +216,7 @@ def batch_tweets_dict(records):
     trump_tweets = {}
     biden_tweets = {}
     trump_biden_tweets = {}
+    count = 0
 
     for record in records:
         if record.error():
@@ -226,6 +227,7 @@ def batch_tweets_dict(records):
             continue
         
         if record.value() is None:
+            count += 1
             continue
 
         try: 
@@ -234,12 +236,15 @@ def batch_tweets_dict(records):
             tweet_info = extract_tweet_info(record_str)
 
         except InvalidTweet as e: 
+            count += 1
             continue
 
         except NotEnglishTweet:
+            count += 1
             continue
 
         except json.decoder.JSONDecodeError: 
+            count += 1
             continue
         
         flag_trump = False
@@ -267,6 +272,7 @@ def batch_tweets_dict(records):
             biden_tweets.update(tweet_info)
 
         else:
+            count += 1
             continue
     logging.info(
         'CONSUME (batch_tweets_dict): #%s - Found - Trump tweets: %d; Biden tweets: %d; Trump & Biden tweets: %d',
@@ -277,7 +283,7 @@ def batch_tweets_dict(records):
         "trump": trump_tweets,
         "biden": biden_tweets,
         "trump_biden":  trump_biden_tweets
-    }
+    }, count
 
 def bulk_tweets(index, candidate_tweets):
     for tweet_id, tweet_info in candidate_tweets.items():
@@ -397,6 +403,8 @@ def _consume(config, model, model_path):
     sentimentclassifier = _init_sentiment_classifier(model, model_path)
     barrier.wait()
 
+    total_count = 0
+
     while True:
         logging.info(
             'CONSUME: #%s - Waiting for message...', 
@@ -416,8 +424,9 @@ def _consume(config, model, model_path):
                 continue
             
             # get batch of tweets (dict of tweets for trump, biden and both)
-            batch_tweets = batch_tweets_dict(records)
-            
+            batch_tweets, count = batch_tweets_dict(records)
+            total_count += count
+
             for index, candidate_tweets in batch_tweets.items():
                 ids = []
                 tweets = []
@@ -437,19 +446,19 @@ def _consume(config, model, model_path):
 
 
                 # feed tweets to ElasticSearch
-                try:
-                    # no memory allocation when sending bulk of tweets to ES
-                    response = helpers.bulk(es, bulk_tweets(index, candidate_tweets))
+                # try:
+                #     # no memory allocation when sending bulk of tweets to ES
+                #     response = helpers.bulk(es, bulk_tweets(index, candidate_tweets))
 
-                    logging.info(
-                        'CONSUME (to ElasticSearch): #%s - %s',
-                        os.getpid(), str(response)
-                    )
-                except Exception as e:
-                    logging.critical(
-                        'CONSUME (to ElasticSearch EXCEPTION): #%s - %s', 
-                        os.getpid(), str(e)
-                    )
+                #     logging.info(
+                #         'CONSUME (to ElasticSearch): #%s - %s',
+                #         os.getpid(), str(response)
+                #     )
+                # except Exception as e:
+                #     logging.critical(
+                #         'CONSUME (to ElasticSearch EXCEPTION): #%s - %s', 
+                #         os.getpid(), str(e)
+                #     )
 
             try:
                 c.commit()
@@ -475,6 +484,12 @@ def _consume(config, model, model_path):
                 'CONSUME: #%s - Kafka consumer closed gracefully.',
                 os.getpid()
             )
+
+            topic_partition = c.assignment()
+
+            with open('partition_'+os.getpid()+'.txt', "w") as output:
+                output.write("TOPIC, PARTITIONS %s \n" %("".join(str(topic_partition))))
+
             sys.exit(0)
 
         except KafkaError as e: 
